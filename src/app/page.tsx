@@ -228,18 +228,7 @@ export default function Home() {
 
         </div>
 
-        {/* Project Links */}
-        <div className="flex justify-center pt-8">
-          <a
-            href="https://github.com/niedy707/kommo"
-            target="_blank"
-            className="flex items-center gap-3 px-6 py-3 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 hover:border-slate-700 hover:text-white text-slate-400 transition-all group"
-          >
-            <GitBranch className="w-5 h-5 group-hover:text-amber-500 transition-colors" />
-            <span className="font-mono text-sm">github.com/niedy707/kommo</span>
-            <ExternalLink className="w-4 h-4 opacity-50" />
-          </a>
-        </div>
+
 
       </div>
     </main>
