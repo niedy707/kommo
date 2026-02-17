@@ -101,6 +101,8 @@ async function handleSync(request: NextRequest) {
 
         const FIXED_DESCRIPTION = "Bu takvim etkinliği orijinal etkinliğin bir kopyasıdır ve bir otomasyon ile mevcut takvime aktarılmaktadır.";
 
+        const usedEventIds = new Set<string>();
+
         for (const srcEv of syncEvents) {
             if (!srcEv.start?.dateTime || !srcEv.end?.dateTime) continue;
 
@@ -130,27 +132,50 @@ async function handleSync(request: NextRequest) {
 
             const srcLocation = srcEv.location || "";
 
-            // Check if exists in target
-            // Match by Start Time AND (Title == NewTitle OR Title == OldRawTitle)
-            const existing = targetEvents.find(tgt => {
+            // Improved Matching Logic
+            // 1. Filter out already matched events
+            const availableTargets = targetEvents.filter(t => t.id && !usedEventIds.has(t.id));
+
+            // 2. Try Exact Match First (Title + Start Time)
+            let existing = availableTargets.find(tgt => {
                 const tgtStart = tgt.start?.dateTime ? new Date(tgt.start.dateTime).toISOString() : null;
                 return tgtStart === srcStart && (tgt.summary === targetTitle || tgt.summary === srcRawTitle);
             });
 
-            if (existing) {
-                // Check if update needed (Title, Description, or Color)
+            // 3. If no exact match, Try Name Match Only (e.g. event moved to new time)
+            if (!existing) {
+                existing = availableTargets.find(tgt => {
+                    return tgt.summary === targetTitle || tgt.summary === srcRawTitle;
+                });
+            }
+
+            if (existing && existing.id) {
+                // Mark this target event as handled so it's not matched again
+                usedEventIds.add(existing.id);
+
+                // Check if update needed (Title, Description, Color, or Time)
+                const tgtStart = existing.start?.dateTime ? new Date(existing.start.dateTime).toISOString() : null;
+                const tgtEnd = existing.end?.dateTime ? new Date(existing.end.dateTime).toISOString() : null;
+                const srcEnd = new Date(srcEv.end.dateTime).toISOString();
+
                 const needsTitleUpdate = existing.summary !== targetTitle;
                 const needsDescUpdate = existing.description !== targetDescription;
                 const needsColorUpdate = existing.colorId !== targetColorId;
+                const needsTimeUpdate = tgtStart !== srcStart || tgtEnd !== srcEnd;
+                const needsLocationUpdate = (existing.location || "") !== srcLocation;
 
-                if (needsTitleUpdate || needsDescUpdate || needsColorUpdate) {
+                if (needsTitleUpdate || needsDescUpdate || needsColorUpdate || needsTimeUpdate || needsLocationUpdate) {
+                    console.log(`Updating event: ${targetTitle} (Time changed: ${needsTimeUpdate})`);
                     await calendar.events.patch({
                         calendarId: CALENDAR_CONFIG.targetCalendarId,
-                        eventId: existing.id || undefined,
+                        eventId: existing.id,
                         requestBody: {
                             summary: targetTitle, // Force new title
                             description: targetDescription,
-                            colorId: targetColorId
+                            colorId: targetColorId,
+                            start: srcEv.start, // Update time
+                            end: srcEv.end,     // Update time
+                            location: srcLocation
                         }
                     });
                     updatedCount++;
@@ -161,7 +186,7 @@ async function handleSync(request: NextRequest) {
             }
 
             // Insert new event
-            await calendar.events.insert({
+            const newEvent = await calendar.events.insert({
                 calendarId: CALENDAR_CONFIG.targetCalendarId,
                 requestBody: {
                     summary: targetTitle,
@@ -175,6 +200,10 @@ async function handleSync(request: NextRequest) {
                     }
                 }
             });
+
+            if (newEvent.data.id) {
+                usedEventIds.add(newEvent.data.id);
+            }
             createdCount++;
         }
 
