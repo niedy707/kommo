@@ -1,11 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { RefreshCw, Calendar, ArrowRight, GitBranch, ShieldCheck, Clock, CheckCircle2, Activity, ExternalLink } from "lucide-react";
+import { RefreshCw, Calendar, Clock, CheckCircle2, Activity, ShieldCheck } from "lucide-react";
+import { translations } from "@/lib/translations";
 
 export default function Home() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [data, setData] = useState<any>(null);
+  const [lang, setLang] = useState<'en' | 'tr'>('en');
+
+  const t = translations[lang];
 
   const performSync = (trigger: 'manual' | 'auto' = 'manual') => {
     if (isSyncing) return;
@@ -31,6 +35,16 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return lang === 'en' ? "--:--" : "--:--";
+    return new Date(dateStr).toLocaleTimeString(lang === 'en' ? 'en-US' : 'tr-TR', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatFullDate = (dateStr: string) => {
+    if (!dateStr) return t.waiting;
+    return new Date(dateStr).toLocaleDateString(lang === 'en' ? 'en-US' : 'tr-TR');
+  };
+
   return (
     <main className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-amber-500/30">
 
@@ -44,16 +58,34 @@ export default function Home() {
             <h1 className="font-bold text-xl tracking-tight text-slate-100">Kommo<span className="text-slate-500">Sync</span></h1>
           </div>
 
-          <button
-            onClick={() => performSync('manual')}
-            disabled={isSyncing}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all border ${isSyncing
-              ? "bg-slate-800 border-slate-700 text-slate-400 cursor-wait"
-              : "bg-amber-500 hover:bg-amber-400 text-slate-900 border-amber-400 shadow-lg shadow-amber-900/20 active:scale-95"}`}
-          >
-            <RefreshCw className={`w-4 h-4 ${isSyncing ? "animate-spin" : ""}`} />
-            {isSyncing ? "Senkronize Ediliyor..." : "Şimdi Senkronize Et"}
-          </button>
+          <div className="flex items-center gap-4">
+            {/* Language Switcher */}
+            <div className="flex items-center bg-slate-800 rounded-lg p-1 border border-slate-700">
+              <button
+                onClick={() => setLang('tr')}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2 ${lang === 'tr' ? 'bg-slate-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                <span>🇹🇷</span> TR
+              </button>
+              <button
+                onClick={() => setLang('en')}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2 ${lang === 'en' ? 'bg-slate-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+              >
+                <span>🇬🇧</span> EN
+              </button>
+            </div>
+
+            <button
+              onClick={() => performSync('manual')}
+              disabled={isSyncing}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all border ${isSyncing
+                ? "bg-slate-800 border-slate-700 text-slate-400 cursor-wait"
+                : "bg-amber-500 hover:bg-amber-400 text-slate-900 border-amber-400 shadow-lg shadow-amber-900/20 active:scale-95"}`}
+            >
+              <RefreshCw className={`w-4 h-4 ${isSyncing ? "animate-spin" : ""}`} />
+              {isSyncing ? t.syncing : t.syncNow}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -68,12 +100,12 @@ export default function Home() {
               <Clock className="w-24 h-24" />
             </div>
             <div className="relative z-10">
-              <p className="text-slate-500 text-sm font-bold uppercase tracking-wider mb-1">Son Senkronizasyon</p>
+              <p className="text-slate-500 text-sm font-bold uppercase tracking-wider mb-1">{t.lastSync}</p>
               <h2 className="text-2xl font-bold text-white">
-                {data?.timestamp ? new Date(data.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : "--:--"}
+                {formatDate(data?.timestamp)}
               </h2>
               <p className="text-xs text-slate-600 font-medium mt-1">
-                {data?.timestamp ? new Date(data.timestamp).toLocaleDateString('tr-TR') : "Bekleniyor..."}
+                {formatFullDate(data?.timestamp)}
               </p>
             </div>
           </div>
@@ -84,12 +116,12 @@ export default function Home() {
               <Activity className="w-24 h-24" />
             </div>
             <div className="relative z-10">
-              <p className="text-amber-500/80 text-sm font-bold uppercase tracking-wider mb-1">Aktarılan Ameliyat</p>
+              <p className="text-amber-500/80 text-sm font-bold uppercase tracking-wider mb-1">{t.syncedSurgeries}</p>
               <h2 className="text-4xl font-black text-white">
                 {data?.stats?.created !== undefined ? data.stats.created + data.stats.updated : "-"}
               </h2>
               <p className="text-xs text-slate-500 font-medium mt-1">
-                Bu seansta işlenen
+                {t.processedSession}
               </p>
             </div>
           </div>
@@ -102,15 +134,15 @@ export default function Home() {
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">Kaynak Takvim</p>
+                <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">{t.sourceCalendar}</p>
               </div>
               <h3 className="text-lg font-bold text-slate-200 truncate" title={data?.stats?.source?.name}>
-                {data?.stats?.source?.name || "Yükleniyor..."}
+                {data?.stats?.source?.name || t.loading}
               </h3>
               <p className="mt-2 text-3xl font-bold text-white">
                 {data?.stats?.source?.futureEvents ?? "-"}
               </p>
-              <p className="text-xs text-slate-600">Gelecek Etkinlik (6 Ay)</p>
+              <p className="text-xs text-slate-600">{t.futureEvents}</p>
             </div>
           </div>
 
@@ -122,15 +154,15 @@ export default function Home() {
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">Kopya Takvim</p>
+                <p className="text-slate-500 text-sm font-bold uppercase tracking-wider">{t.targetCalendar}</p>
               </div>
               <h3 className="text-lg font-bold text-slate-200 truncate" title={data?.stats?.target?.name}>
-                {data?.stats?.target?.name || "Yükleniyor..."}
+                {data?.stats?.target?.name || t.loading}
               </h3>
               <p className="mt-2 text-3xl font-bold text-white">
                 {data?.stats?.target?.totalEvents ?? "-"}
               </p>
-              <p className="text-xs text-slate-600">Toplam Kopya</p>
+              <p className="text-xs text-slate-600">{t.totalCopies}</p>
             </div>
           </div>
 
@@ -144,9 +176,9 @@ export default function Home() {
             <h3 className="text-xl font-bold text-white mb-4 flex items-center justify-between">
               <span className="flex items-center gap-3">
                 <Activity className="w-6 h-6 text-slate-400" />
-                İşlem Geçmişi
+                {t.syncLogs}
               </span>
-              <span className="text-xs font-mono text-slate-500 bg-slate-800 px-2 py-1 rounded">Son 100</span>
+              <span className="text-xs font-mono text-slate-500 bg-slate-800 px-2 py-1 rounded">{t.last100}</span>
             </h3>
 
             <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
@@ -156,15 +188,15 @@ export default function Home() {
                     <div className="flex items-start justify-between mb-1">
                       <div className="flex items-center gap-2">
                         {log.trigger === 'manual'
-                          ? <span className="text-[10px] font-bold text-slate-300 bg-slate-700 px-1.5 py-0.5 rounded border border-slate-600" title="Manuel Tetikleme">M</span>
-                          : <span className="text-[10px] font-bold text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700" title="Otomatik Tetikleme">A</span>
+                          ? <span className="text-[10px] font-bold text-slate-300 bg-slate-700 px-1.5 py-0.5 rounded border border-slate-600" title={t.manual}>M</span>
+                          : <span className="text-[10px] font-bold text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700" title={t.auto}>A</span>
                         }
-                        {log.type === 'create' && <span className="text-xs font-bold text-slate-900 bg-emerald-500 px-1.5 py-0.5 rounded">YENİ</span>}
-                        {log.type === 'update' && <span className="text-xs font-bold text-slate-900 bg-amber-500 px-1.5 py-0.5 rounded">GÜNCELLEME</span>}
+                        {log.type === 'create' && <span className="text-xs font-bold text-slate-900 bg-emerald-500 px-1.5 py-0.5 rounded">{t.logNew}</span>}
+                        {log.type === 'update' && <span className="text-xs font-bold text-slate-900 bg-amber-500 px-1.5 py-0.5 rounded">{t.logUpdate}</span>}
                         <span className="text-sm font-semibold text-slate-300">{log.message}</span>
                       </div>
                       <span className="text-[10px] text-slate-500 font-mono shrink-0">
-                        {new Date(log.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(log.timestamp).toLocaleTimeString(lang === 'en' ? 'en-US' : 'tr-TR', { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                     {log.details && (
@@ -177,7 +209,7 @@ export default function Home() {
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-slate-500 opacity-50">
                   <Activity className="w-12 h-12 mb-2 stroke-1" />
-                  <p>Henüz kayıt bulunmuyor</p>
+                  <p>{t.noLogs}</p>
                 </div>
               )}
             </div>
@@ -187,40 +219,40 @@ export default function Home() {
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 h-[500px] overflow-y-auto">
             <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
               <ShieldCheck className="w-6 h-6 text-slate-400" />
-              Senkronizasyon Kuralları
+              {t.syncRules}
             </h3>
 
             <div className="grid grid-cols-1 gap-6">
               <div className="space-y-4">
                 <RuleItem
-                  title="Kapsam"
-                  desc="Bugünden itibaren gelecek 6 aylık etkinlikler taranır."
+                  title={t.ruleScope}
+                  desc={t.ruleScopeDesc}
                 />
                 <RuleItem
-                  title="Sıklık"
-                  desc="Her 15 dakikada bir otomatik kontrol sağlanır."
-                />
-              </div>
-
-              <div className="space-y-4">
-                <RuleItem
-                  title="Filtreleme"
-                  desc="Sadece 'Ameliyat' türündeki ve 'Blok' (izin, kongre) etkinlikleri aktarılır."
-                />
-                <RuleItem
-                  title="Gizlilik"
-                  desc="Ameliyat isimleri 'Surgery Ad Soyad' formatında maskelenir."
+                  title={t.ruleFrequency}
+                  desc={t.ruleFrequencyDesc}
                 />
               </div>
 
               <div className="space-y-4">
                 <RuleItem
-                  title="Görünüm"
-                  desc="Ameliyat etkinlikleri hedef takvimde SARI renkle işaretlenir."
+                  title={t.ruleFiltering}
+                  desc={t.ruleFilteringDesc}
                 />
                 <RuleItem
-                  title="Duplikasyon Kontrolü"
-                  desc="Aynı isimli etkinliklerin saati değişse bile tekrar oluşturulmaz, mevcut kayıt güncellenir."
+                  title={t.rulePrivacy}
+                  desc={t.rulePrivacyDesc}
+                />
+              </div>
+
+              <div className="space-y-4">
+                <RuleItem
+                  title={t.ruleAppearance}
+                  desc={t.ruleAppearanceDesc}
+                />
+                <RuleItem
+                  title={t.ruleDuplication}
+                  desc={t.ruleDuplicationDesc}
                 />
               </div>
             </div>
