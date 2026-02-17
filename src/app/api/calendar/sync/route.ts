@@ -178,14 +178,28 @@ async function handleSync(request: NextRequest) {
             createdCount++;
         }
 
+        // Fetch Calendar Details for UI
+        const [sourceCalInfo, targetCalInfo] = await Promise.all([
+            calendar.calendars.get({ calendarId: CALENDAR_CONFIG.calendarId }).catch(() => ({ data: { summary: 'Source Calendar' } })),
+            calendar.calendars.get({ calendarId: CALENDAR_CONFIG.targetCalendarId }).catch(() => ({ data: { summary: 'Target Calendar' } }))
+        ]);
+
         return NextResponse.json({
             success: true,
-            message: "Sync completed",
+            timestamp: new Date().toISOString(),
             stats: {
                 foundTotal: syncEvents.length,
                 created: createdCount,
                 updated: updatedCount,
-                skipped: skippedCount
+                skipped: skippedCount,
+                source: {
+                    name: sourceCalInfo.data.summary,
+                    futureEvents: syncEvents.length
+                },
+                target: {
+                    name: targetCalInfo.data.summary,
+                    totalEvents: targetEvents.length
+                }
             }
         });
 
