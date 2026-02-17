@@ -102,7 +102,7 @@ export default function Home() {
             <div className="relative z-10">
               <p className="text-slate-500 text-sm font-bold uppercase tracking-wider mb-1">{t.lastSync}</p>
               <h2 className="text-2xl font-bold text-white">
-                {formatDate(data?.timestamp)}
+                {formatDate(data?.timestamp)} <span className="text-sm text-slate-500 font-normal">(GMT +3)</span>
               </h2>
               <p className="text-xs text-slate-600 font-medium mt-1">
                 {formatFullDate(data?.timestamp)}
