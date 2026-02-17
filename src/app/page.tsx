@@ -8,6 +8,8 @@ export default function Home() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [data, setData] = useState<any>(null);
   const [lang, setLang] = useState<'en' | 'tr'>('en');
+  const [nextSync, setNextSync] = useState<Date | null>(null);
+  const [timeLeft, setTimeLeft] = useState<string>("");
 
   const t = translations[lang];
 
@@ -17,8 +19,13 @@ export default function Home() {
     fetch(`/api/calendar/sync?trigger=${trigger}`, { method: 'POST' })
       .then(res => res.json())
       .then(d => {
-        if (d.success) setData(d);
-        else console.error(d.error);
+        if (d.success) {
+          setData(d);
+          // Set next sync time to 15 minutes from now
+          setNextSync(new Date(Date.now() + 15 * 60 * 1000));
+        } else {
+          console.error(d.error);
+        }
       })
       .catch(console.error)
       .finally(() => setIsSyncing(false));
@@ -34,6 +41,26 @@ export default function Home() {
     }, 15 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
+
+  // Countdown Timer
+  useEffect(() => {
+    if (!nextSync) return;
+
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = nextSync.getTime() - now;
+
+      if (distance < 0) {
+        setTimeLeft(lang === 'en' ? "Syncing..." : "Senkronize ediliyor...");
+      } else {
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        setTimeLeft(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [nextSync, lang]);
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return lang === 'en' ? "--:--" : "--:--";
@@ -104,9 +131,16 @@ export default function Home() {
               <h2 className="text-2xl font-bold text-white">
                 {formatDate(data?.timestamp)} <span className="text-sm text-slate-500 font-normal">(GMT +3)</span>
               </h2>
-              <p className="text-xs text-slate-600 font-medium mt-1">
-                {formatFullDate(data?.timestamp)}
-              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <p className="text-xs text-slate-600 font-medium">
+                  {formatFullDate(data?.timestamp)}
+                </p>
+                {timeLeft && (
+                  <span className="text-[10px] font-mono text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                    -{timeLeft}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
