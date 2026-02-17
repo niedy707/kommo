@@ -90,10 +90,12 @@ async function handleSync(request: NextRequest) {
             let targetTitle = srcRawTitle;
             let targetDescription = srcEv.description || "";
             let targetColorId = srcEv.colorId;
+            let logTitle = srcRawTitle; // Default log title
 
             if (category === 'surgery') {
                 const cleanedName = cleanDisplayName(srcRawTitle);
                 targetTitle = `Surgery ${cleanedName}`;
+                logTitle = cleanedName; // Log only the name for surgeries
                 targetDescription = FIXED_DESCRIPTION;
                 targetColorId = '5';
             }
@@ -139,7 +141,7 @@ async function handleSync(request: NextRequest) {
 
                     sessionLogs.push({
                         type: 'update',
-                        message: targetTitle,
+                        message: logTitle,
                         details: changes.length > 0 ? changes.join(', ') : 'Detay güncellendi',
                         trigger
                     });
@@ -166,7 +168,7 @@ async function handleSync(request: NextRequest) {
             // Insert new event
             sessionLogs.push({
                 type: 'create',
-                message: targetTitle,
+                message: logTitle,
                 details: `${new Date(srcStart).toLocaleDateString('tr-TR')} - ${srcEv.start.dateTime.split('T')[1].slice(0, 5)}`,
                 trigger
             });
