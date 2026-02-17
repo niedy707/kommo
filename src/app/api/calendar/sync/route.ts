@@ -8,6 +8,7 @@ import { categorizeEvent, cleanDisplayName } from '@/lib/classification';
 export const dynamic = 'force-dynamic';
 
 import { addLogs, getLogs } from '@/lib/syncLogger';
+import { sendWhatsappNotification } from '@/lib/notifications';
 
 export async function POST(request: NextRequest) {
     return handleSync(request);
@@ -223,6 +224,10 @@ async function handleSync(request: NextRequest) {
 
     } catch (error: any) {
         console.error("Sync Error:", error);
+
+        // Notify via WhatsApp
+        await sendWhatsappNotification(`🚨 KommoSync Hatası:\n${error.message || "Bilinmeyen Hata"}`);
+
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
