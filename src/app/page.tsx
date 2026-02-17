@@ -136,47 +136,92 @@ export default function Home() {
 
         </div>
 
-        {/* Sync Rules Section */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8">
-          <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-            <ShieldCheck className="w-6 h-6 text-slate-400" />
-            Senkronizasyon Kuralları
-          </h3>
+        {/* Sync Rules and Logs Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="space-y-4">
-              <RuleItem
-                title="Kapsam"
-                desc="Bugünden itibaren gelecek 6 aylık etkinlikler taranır."
-              />
-              <RuleItem
-                title="Sıklık"
-                desc="Her 15 dakikada bir otomatik kontrol sağlanır."
-              />
-            </div>
+          {/* LOGS Section - Right Bottom */}
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 flex flex-col h-[500px]">
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center justify-between">
+              <span className="flex items-center gap-3">
+                <Activity className="w-6 h-6 text-slate-400" />
+                İşlem Geçmişi
+              </span>
+              <span className="text-xs font-mono text-slate-500 bg-slate-800 px-2 py-1 rounded">Son 100</span>
+            </h3>
 
-            <div className="space-y-4">
-              <RuleItem
-                title="Filtreleme"
-                desc="Sadece 'Ameliyat' türündeki ve 'Blok' (izin, kongre) etkinlikleri aktarılır."
-              />
-              <RuleItem
-                title="Gizlilik"
-                desc="Ameliyat isimleri 'Surgery Ad Soyad' formatında maskelenir."
-              />
-            </div>
-
-            <div className="space-y-4">
-              <RuleItem
-                title="Görünüm"
-                desc="Ameliyat etkinlikleri hedef takvimde SARI renkle işaretlenir."
-              />
-              <RuleItem
-                title="Açıklama"
-                desc="Otomatik eklendiğine dair standart bir not eklenir."
-              />
+            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
+              {data?.logs && data.logs.length > 0 ? (
+                data.logs.map((log: any) => (
+                  <div key={log.id} className="p-3 bg-slate-950/50 rounded-xl border border-slate-800/50 hover:border-slate-700 transition-colors">
+                    <div className="flex items-start justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        {log.type === 'create' && <span className="text-xs font-bold text-slate-900 bg-emerald-500 px-1.5 py-0.5 rounded">YENİ</span>}
+                        {log.type === 'update' && <span className="text-xs font-bold text-slate-900 bg-amber-500 px-1.5 py-0.5 rounded">GÜNCELLEME</span>}
+                        <span className="text-sm font-semibold text-slate-300">{log.message}</span>
+                      </div>
+                      <span className="text-[10px] text-slate-500 font-mono shrink-0">
+                        {new Date(log.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    {log.details && (
+                      <p className="text-xs text-slate-500 ml-1 pl-2 border-l-2 border-slate-800">
+                        {log.details}
+                      </p>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-slate-500 opacity-50">
+                  <Activity className="w-12 h-12 mb-2 stroke-1" />
+                  <p>Henüz kayıt bulunmuyor</p>
+                </div>
+              )}
             </div>
           </div>
+
+          {/* Sync Rules Section */}
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 h-[500px] overflow-y-auto">
+            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
+              <ShieldCheck className="w-6 h-6 text-slate-400" />
+              Senkronizasyon Kuralları
+            </h3>
+
+            <div className="grid grid-cols-1 gap-6">
+              <div className="space-y-4">
+                <RuleItem
+                  title="Kapsam"
+                  desc="Bugünden itibaren gelecek 6 aylık etkinlikler taranır."
+                />
+                <RuleItem
+                  title="Sıklık"
+                  desc="Her 15 dakikada bir otomatik kontrol sağlanır."
+                />
+              </div>
+
+              <div className="space-y-4">
+                <RuleItem
+                  title="Filtreleme"
+                  desc="Sadece 'Ameliyat' türündeki ve 'Blok' (izin, kongre) etkinlikleri aktarılır."
+                />
+                <RuleItem
+                  title="Gizlilik"
+                  desc="Ameliyat isimleri 'Surgery Ad Soyad' formatında maskelenir."
+                />
+              </div>
+
+              <div className="space-y-4">
+                <RuleItem
+                  title="Görünüm"
+                  desc="Ameliyat etkinlikleri hedef takvimde SARI renkle işaretlenir."
+                />
+                <RuleItem
+                  title="Duplikasyon Kontrolü"
+                  desc="Aynı isimli etkinliklerin saati değişse bile tekrar oluşturulmaz, mevcut kayıt güncellenir."
+                />
+              </div>
+            </div>
+          </div>
+
         </div>
 
         {/* Project Links */}

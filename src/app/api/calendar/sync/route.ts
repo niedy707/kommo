@@ -7,17 +7,24 @@ import { categorizeEvent, cleanDisplayName } from '@/lib/classification';
 
 export const dynamic = 'force-dynamic';
 
+import { addLogs, getLogs } from '@/lib/syncLogger';
+
 export async function POST(request: NextRequest) {
     return handleSync(request);
 }
 
 export async function GET(request: NextRequest) {
+    // If it's a simple GET, maybe return logs? 
+    // But handleSync essentially does a sync. 
+    // Let's create a separate route for just fetching logs later if needed, but for now user wants to see it "during sync" or on dashboard.
+    // Actually, dashboard polls this.
     return handleSync(request);
 }
 
 async function handleSync(request: NextRequest) {
     try {
         console.log("Starting calendar sync...");
+        const sessionLogs: { type: 'create' | 'update' | 'info', message: string, details?: string }[] = [];
 
         // 1. Auth
         const SCOPES = ['https://www.googleapis.com/auth/calendar']; // Read/Write access needed
@@ -165,6 +172,17 @@ async function handleSync(request: NextRequest) {
                 const needsLocationUpdate = (existing.location || "") !== srcLocation;
 
                 if (needsTitleUpdate || needsDescUpdate || needsColorUpdate || needsTimeUpdate || needsLocationUpdate) {
+                    const changes = [];
+                    if (needsTitleUpdate) changes.push(`İsim: ${existing.summary} -> ${targetTitle}`);
+                    if (needsTimeUpdate) changes.push(`Saat: ${new Date(tgtStart!).toLocaleString('tr-TR')} -> ${new Date(srcStart).toLocaleString('tr-TR')}`);
+                    if (needsColorUpdate) changes.push(`Renk güncellendi`);
+
+                    sessionLogs.push({
+                        type: 'update',
+                        message: `Güncellendi: ${targetTitle}`,
+                        details: changes.join(', ')
+                    });
+
                     console.log(`Updating event: ${targetTitle} (Time changed: ${needsTimeUpdate})`);
                     await calendar.events.patch({
                         calendarId: CALENDAR_CONFIG.targetCalendarId,
@@ -186,6 +204,11 @@ async function handleSync(request: NextRequest) {
             }
 
             // Insert new event
+            sessionLogs.push({
+                type: 'create',
+                message: `Yeni Eklendi: ${targetTitle}`,
+                details: `${new Date(srcStart).toLocaleDateString('tr-TR')} - ${srcEv.start.dateTime.split('T')[1].slice(0, 5)}`
+            });
             const newEvent = await calendar.events.insert({
                 calendarId: CALENDAR_CONFIG.targetCalendarId,
                 requestBody: {
@@ -207,6 +230,11 @@ async function handleSync(request: NextRequest) {
             createdCount++;
         }
 
+        // SAVE LOGS
+        if (sessionLogs.length > 0) {
+            addLogs(sessionLogs);
+        }
+
         // Fetch Calendar Details for UI
         const [sourceCalInfo, targetCalInfo] = await Promise.all([
             calendar.calendars.get({ calendarId: CALENDAR_CONFIG.calendarId }).catch(() => ({ data: { summary: 'Source Calendar' } })),
@@ -216,6 +244,7 @@ async function handleSync(request: NextRequest) {
         return NextResponse.json({
             success: true,
             timestamp: new Date().toISOString(),
+            logs: getLogs(), // Return all logs (last 100)
             stats: {
                 foundTotal: syncEvents.length,
                 created: createdCount,
