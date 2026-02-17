@@ -117,17 +117,18 @@ async function handleSync(request: NextRequest) {
 
             let targetTitle = srcRawTitle;
             let targetDescription = srcEv.description || ""; // Default to source description
+            let targetColorId = srcEv.colorId; // Default to source color
 
             if (category === 'surgery') {
                 // New Title Format: "Surgery Name Surname"
                 const cleanedName = cleanDisplayName(srcRawTitle);
                 targetTitle = `Surgery ${cleanedName}`;
                 targetDescription = FIXED_DESCRIPTION; // Override for surgeries
+                targetColorId = '5'; // Force Yellow for surgeries (User Request)
             }
-            // For 'blocked', we keep the original title and description
+            // For 'blocked', we keep the original title, description, and color
 
             const srcLocation = srcEv.location || "";
-            const srcColorId = srcEv.colorId;
 
             // Check if exists in target
             // Match by Start Time AND (Title == NewTitle OR Title == OldRawTitle)
@@ -140,7 +141,7 @@ async function handleSync(request: NextRequest) {
                 // Check if update needed (Title, Description, or Color)
                 const needsTitleUpdate = existing.summary !== targetTitle;
                 const needsDescUpdate = existing.description !== targetDescription;
-                const needsColorUpdate = existing.colorId !== srcColorId;
+                const needsColorUpdate = existing.colorId !== targetColorId;
 
                 if (needsTitleUpdate || needsDescUpdate || needsColorUpdate) {
                     await calendar.events.patch({
@@ -149,7 +150,7 @@ async function handleSync(request: NextRequest) {
                         requestBody: {
                             summary: targetTitle, // Force new title
                             description: targetDescription,
-                            colorId: srcColorId
+                            colorId: targetColorId
                         }
                     });
                     updatedCount++;
@@ -168,7 +169,7 @@ async function handleSync(request: NextRequest) {
                     location: srcLocation,
                     start: srcEv.start,
                     end: srcEv.end,
-                    colorId: srcColorId,
+                    colorId: targetColorId,
                     reminders: {
                         useDefault: true
                     }
