@@ -196,16 +196,21 @@ async function handleSync(request: NextRequest) {
             addLogs(sessionLogs);
         }
 
-        // Fetch Calendar Details for UI
-        const [sourceCalInfo, targetCalInfo] = await Promise.all([
-            calendar.calendars.get({ calendarId: CALENDAR_CONFIG.calendarId }).catch(() => ({ data: { summary: 'Source Calendar' } })),
-            calendar.calendars.get({ calendarId: CALENDAR_CONFIG.targetCalendarId }).catch(() => ({ data: { summary: 'Target Calendar' } }))
-        ]);
+        // Generate Upcoming Surgeries List (from Target Calendar)
+        const upcomingSurgeries = targetEvents
+            .filter(ev => ev.summary?.startsWith('Surgery') && ev.start?.dateTime)
+            .map(ev => ({
+                id: ev.id,
+                name: ev.summary?.replace('Surgery', '').trim(),
+                date: ev.start?.dateTime,
+            }))
+            .sort((a, b) => new Date(a.date!).getTime() - new Date(b.date!).getTime());
 
         return NextResponse.json({
             success: true,
             timestamp: new Date().toISOString(),
             logs: getLogs(), // Return all logs (last 100)
+            upcomingSurgeries, // New field
             stats: {
                 foundTotal: syncEvents.length,
                 created: createdCount,

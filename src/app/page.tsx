@@ -202,12 +202,12 @@ export default function Home() {
 
         </div>
 
-        {/* Sync Rules and Logs Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Main Content Grid: Logs & Upcoming Surgeries */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[600px]">
 
-          {/* LOGS Section - Right Bottom */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 flex flex-col h-[500px]">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center justify-between">
+          {/* LOGS Section - Left (2 cols) */}
+          <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-3xl p-8 flex flex-col h-full overflow-hidden">
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center justify-between shrink-0">
               <span className="flex items-center gap-3">
                 <Activity className="w-6 h-6 text-slate-400" />
                 {t.syncLogs}
@@ -249,49 +249,79 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Sync Rules Section */}
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 h-[500px] overflow-y-auto">
-            <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-              <ShieldCheck className="w-6 h-6 text-slate-400" />
-              {t.syncRules}
+          {/* Planned Surgeries List - Right (1 col) */}
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 flex flex-col h-full overflow-hidden">
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-3 shrink-0">
+              <Calendar className="w-6 h-6 text-slate-400" />
+              {t.upcomingSurgeriesTitle}
             </h3>
 
-            <div className="grid grid-cols-1 gap-6">
-              <div className="space-y-4">
-                <RuleItem
-                  title={t.ruleScope}
-                  desc={t.ruleScopeDesc}
-                />
-                <RuleItem
-                  title={t.ruleFrequency}
-                  desc={t.ruleFrequencyDesc}
-                />
-              </div>
-
-              <div className="space-y-4">
-                <RuleItem
-                  title={t.ruleFiltering}
-                  desc={t.ruleFilteringDesc}
-                />
-                <RuleItem
-                  title={t.rulePrivacy}
-                  desc={t.rulePrivacyDesc}
-                />
-              </div>
-
-              <div className="space-y-4">
-                <RuleItem
-                  title={t.ruleAppearance}
-                  desc={t.ruleAppearanceDesc}
-                />
-                <RuleItem
-                  title={t.ruleDuplication}
-                  desc={t.ruleDuplicationDesc}
-                />
-              </div>
+            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+              {data?.upcomingSurgeries && data.upcomingSurgeries.length > 0 ? (
+                <table className="w-full text-left border-collapse">
+                  <thead className="sticky top-0 bg-slate-900/95 backdrop-blur z-10">
+                    <tr>
+                      <th className="py-2 text-xs font-bold text-slate-500 uppercase tracking-wider w-24">{t.date}</th>
+                      <th className="py-2 text-xs font-bold text-slate-500 uppercase tracking-wider">{t.patient}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/50">
+                    {data.upcomingSurgeries.map((surgery: any) => (
+                      <tr key={surgery.id} className="group hover:bg-slate-800/20 transition-colors">
+                        <td className="py-2.5 text-xs font-mono text-slate-400">
+                          {new Date(surgery.date).toLocaleDateString(lang === 'en' ? 'en-US' : 'tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        </td>
+                        <td className="py-2.5 text-sm font-semibold text-slate-200 group-hover:text-amber-500 transition-colors">
+                          {surgery.name}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-slate-500 opacity-50">
+                  <Calendar className="w-12 h-12 mb-2 stroke-1" />
+                  <p>{t.loading}</p>
+                </div>
+              )}
             </div>
           </div>
 
+        </div>
+
+        {/* Sync Rules Section - Bottom, Smaller */}
+        <div className="bg-slate-900/30 border border-slate-800/50 rounded-2xl p-6">
+          <h3 className="text-sm font-bold text-slate-400 mb-4 flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4" />
+            {t.syncRules}
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4">
+            <div>
+              <h4 className="text-xs font-bold text-slate-300 mb-0.5">{t.ruleScope}</h4>
+              <p className="text-[10px] text-slate-500 leading-relaxed">{t.ruleScopeDesc}</p>
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-slate-300 mb-0.5">{t.ruleFrequency}</h4>
+              <p className="text-[10px] text-slate-500 leading-relaxed">{t.ruleFrequencyDesc}</p>
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-slate-300 mb-0.5">{t.ruleFiltering}</h4>
+              <p className="text-[10px] text-slate-500 leading-relaxed">{t.ruleFilteringDesc}</p>
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-slate-300 mb-0.5">{t.rulePrivacy}</h4>
+              <p className="text-[10px] text-slate-500 leading-relaxed">{t.rulePrivacyDesc}</p>
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-slate-300 mb-0.5">{t.ruleAppearance}</h4>
+              <p className="text-[10px] text-slate-500 leading-relaxed">{t.ruleAppearanceDesc}</p>
+            </div>
+            <div>
+              <h4 className="text-xs font-bold text-slate-300 mb-0.5">{t.ruleDuplication}</h4>
+              <p className="text-[10px] text-slate-500 leading-relaxed">{t.ruleDuplicationDesc}</p>
+            </div>
+          </div>
         </div>
 
 
@@ -300,13 +330,3 @@ export default function Home() {
     </main>
   );
 }
-
-const RuleItem = ({ title, desc }: { title: string, desc: string }) => (
-  <div className="flex gap-4">
-    <div className="w-1 h-full bg-slate-800 rounded-full shrink-0"></div>
-    <div>
-      <h4 className="text-slate-300 font-bold text-sm uppercase tracking-wide mb-1">{title}</h4>
-      <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
-    </div>
-  </div>
-);

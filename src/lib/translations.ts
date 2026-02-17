@@ -32,7 +32,10 @@ export const translations = {
         logUpdate: "UPDATE",
         manual: "Manual Trigger",
         auto: "Auto Trigger",
-        loading: "Loading..."
+        loading: "Loading...",
+        upcomingSurgeriesTitle: "Planned Surgeries",
+        date: "Date",
+        patient: "Patient"
     },
     tr: {
         title: "KommoSync",
@@ -66,6 +69,9 @@ export const translations = {
         logUpdate: "GÜNCELLEME",
         manual: "Manuel Tetikleme",
         auto: "Otomatik Tetikleme",
-        loading: "Yükleniyor..."
+        loading: "Yükleniyor...",
+        upcomingSurgeriesTitle: "Planlı Ameliyatlar",
+        date: "Tarih",
+        patient: "Hasta"
     }
 };
