@@ -24,10 +24,15 @@ export async function GET(request: NextRequest) {
 async function handleSync(request: NextRequest) {
     try {
         console.log("Starting calendar sync...");
-        const sessionLogs: { type: 'create' | 'update' | 'info', message: string, details?: string }[] = [];
 
-        // 1. Auth
-        const SCOPES = ['https://www.googleapis.com/auth/calendar']; // Read/Write access needed
+        // Get trigger from URL (manual vs auto)
+        const { searchParams } = new URL(request.url);
+        const trigger = (searchParams.get('trigger') as 'manual' | 'auto') || 'auto';
+
+        const sessionLogs: { type: 'create' | 'update' | 'info', message: string, details?: string, trigger: 'manual' | 'auto' }[] = [];
+
+        // ... (Auth and Fetch Logic - UNCHANGED)
+        const SCOPES = ['https://www.googleapis.com/auth/calendar'];
         const privateKey = CALENDAR_CONFIG.key.replace(/\\n/g, '\n');
         const auth = new google.auth.GoogleAuth({
             credentials: {
@@ -42,135 +47,81 @@ async function handleSync(request: NextRequest) {
         const now = new Date();
         const sixMonthsLater = new Date();
         sixMonthsLater.setMonth(now.getMonth() + 6);
-
         const timeMin = now.toISOString();
         const timeMax = sixMonthsLater.toISOString();
 
-        // 3. Fetch "Ameliyat" events from SOURCE calendar
-        console.log("Fetching source events...");
+        // 3. Fetch source events
         const sourceResponse = await calendar.events.list({
             calendarId: CALENDAR_CONFIG.calendarId,
-            timeMin,
-            timeMax,
-            maxResults: 2500,
-            singleEvents: true,
-            orderBy: 'startTime',
-            // q: 'Ameliyat' // REMOVED: Filtering locally now
+            timeMin, timeMax, maxResults: 2500, singleEvents: true, orderBy: 'startTime',
         });
-
         const sourceEvents = sourceResponse.data.items || [];
-        console.log(`Found ${sourceEvents.length} source events.`);
 
-        // Filter using shared classification logic
-        // Filter using shared classification logic
+        // Filter events
         const syncEvents = sourceEvents.filter(ev => {
             if (!ev.summary || ev.status === 'cancelled') return false;
-
             const start = ev.start?.dateTime || ev.start?.date;
             const end = ev.end?.dateTime || ev.end?.date;
-
-            // Use the shared classification logic
-            const category = categorizeEvent(
-                ev.summary,
-                ev.colorId || undefined, // Pass colorId (logic handles '11' or hex)
-                start || undefined,
-                end || undefined
-            );
-
-            // Sync surgeries AND blocked events (izin, kongre, etc.)
+            const category = categorizeEvent(ev.summary, ev.colorId || undefined, start || undefined, end || undefined);
             return category === 'surgery' || category === 'blocked';
         });
-        console.log(`Filtered to ${syncEvents.length} events to sync (surgery + blocked).`);
 
-
-        // 4. Fetch ALL events from TARGET calendar (to avoid duplicates)
-        // We need check existing events to update/skip
-        console.log("Fetching target events...");
+        // 4. Fetch target events
         const targetResponse = await calendar.events.list({
             calendarId: CALENDAR_CONFIG.targetCalendarId,
-            timeMin,
-            timeMax,
-            maxResults: 2500,
-            singleEvents: true,
-            orderBy: 'startTime',
+            timeMin, timeMax, maxResults: 2500, singleEvents: true, orderBy: 'startTime',
         });
         const targetEvents = targetResponse.data.items || [];
-        console.log(`Found ${targetEvents.length} target events.`);
 
         // 5. Sync Logic
-        // Strategy: Match by start time + summary (fuzzy match or exact?)
-        // Better: Use a custom property "sourceEventId" if possible, but we might not have set it before.
-        // Fallback: Match by Start Time exactly. If multiple, match Title.
-
         let createdCount = 0;
         let updatedCount = 0;
         let skippedCount = 0;
-
-        const FIXED_DESCRIPTION = "Bu takvim etkinliği orijinal etkinliğin bir kopyasıdır ve bir otomasyon ile mevcut takvime aktarılmaktadır.";
-
         const usedEventIds = new Set<string>();
+        const FIXED_DESCRIPTION = "Bu takvim etkinliği orijinal etkinliğin bir kopyasıdır ve bir otomasyon ile mevcut takvime aktarılmaktadır.";
 
         for (const srcEv of syncEvents) {
             if (!srcEv.start?.dateTime || !srcEv.end?.dateTime) continue;
 
             const srcStart = new Date(srcEv.start.dateTime).toISOString();
             const srcRawTitle = srcEv.summary || "Etkinlik";
-
-            // Recalculate category for title logic
-            const category = categorizeEvent(
-                srcRawTitle,
-                srcEv.colorId || undefined,
-                srcEv.start.dateTime,
-                srcEv.end.dateTime
-            );
+            const category = categorizeEvent(srcRawTitle, srcEv.colorId || undefined, srcEv.start.dateTime, srcEv.end.dateTime);
 
             let targetTitle = srcRawTitle;
-            let targetDescription = srcEv.description || ""; // Default to source description
-            let targetColorId = srcEv.colorId; // Default to source color
+            let targetDescription = srcEv.description || "";
+            let targetColorId = srcEv.colorId;
 
             if (category === 'surgery') {
-                // New Title Format: "Surgery Name Surname"
                 const cleanedName = cleanDisplayName(srcRawTitle);
                 targetTitle = `Surgery ${cleanedName}`;
-                targetDescription = FIXED_DESCRIPTION; // Override for surgeries
-                targetColorId = '5'; // Force Yellow for surgeries (User Request)
+                targetDescription = FIXED_DESCRIPTION;
+                targetColorId = '5';
             }
-            // For 'blocked', we keep the original title, description, and color
 
             const srcLocation = srcEv.location || "";
 
-            // Improved Matching Logic
-            // 1. Filter out already matched events
+            // MATCHING LOGIC
             const availableTargets = targetEvents.filter(t => t.id && !usedEventIds.has(t.id));
-
-            // 2. Try Exact Match First (Title + Start Time)
             let existing = availableTargets.find(tgt => {
                 const tgtStart = tgt.start?.dateTime ? new Date(tgt.start.dateTime).toISOString() : null;
                 return tgtStart === srcStart && (tgt.summary === targetTitle || tgt.summary === srcRawTitle);
             });
 
-            // 3. If no exact match, Try Name Match Only (e.g. event moved to new time)
             if (!existing) {
-                existing = availableTargets.find(tgt => {
-                    return tgt.summary === targetTitle || tgt.summary === srcRawTitle;
-                });
+                existing = availableTargets.find(tgt => tgt.summary === targetTitle || tgt.summary === srcRawTitle);
             }
 
             if (existing && existing.id) {
-                // Mark this target event as handled so it's not matched again
                 usedEventIds.add(existing.id);
 
-                // Check if update needed (Title, Description, Color, or Time)
                 const tgtStart = existing.start?.dateTime ? new Date(existing.start.dateTime).toISOString() : null;
                 const tgtEnd = existing.end?.dateTime ? new Date(existing.end.dateTime).toISOString() : null;
                 const srcEnd = new Date(srcEv.end.dateTime).toISOString();
 
-                // Normalization helper for comparison
                 const normalizeStr = (str: string | undefined | null) => (str || "").trim();
 
                 const needsTitleUpdate = existing.summary !== targetTitle;
                 const needsDescUpdate = normalizeStr(existing.description) !== normalizeStr(targetDescription);
-                // Handle colorId comparison (treat null/undefined as same)
                 const existingColor = existing.colorId || undefined;
                 const targetColor = targetColorId || undefined;
                 const needsColorUpdate = existingColor !== targetColor;
@@ -189,10 +140,10 @@ async function handleSync(request: NextRequest) {
                     sessionLogs.push({
                         type: 'update',
                         message: targetTitle,
-                        details: changes.length > 0 ? changes.join(', ') : 'Detay güncellendi'
+                        details: changes.length > 0 ? changes.join(', ') : 'Detay güncellendi',
+                        trigger
                     });
 
-                    console.log(`Updating event: ${targetTitle} (Time changed: ${needsTimeUpdate})`);
                     await calendar.events.patch({
                         calendarId: CALENDAR_CONFIG.targetCalendarId,
                         eventId: existing.id,
@@ -216,8 +167,10 @@ async function handleSync(request: NextRequest) {
             sessionLogs.push({
                 type: 'create',
                 message: targetTitle,
-                details: `${new Date(srcStart).toLocaleDateString('tr-TR')} - ${srcEv.start.dateTime.split('T')[1].slice(0, 5)}`
+                details: `${new Date(srcStart).toLocaleDateString('tr-TR')} - ${srcEv.start.dateTime.split('T')[1].slice(0, 5)}`,
+                trigger
             });
+
             const newEvent = await calendar.events.insert({
                 calendarId: CALENDAR_CONFIG.targetCalendarId,
                 requestBody: {
@@ -227,15 +180,11 @@ async function handleSync(request: NextRequest) {
                     start: srcEv.start,
                     end: srcEv.end,
                     colorId: targetColorId,
-                    reminders: {
-                        useDefault: true
-                    }
+                    reminders: { useDefault: true }
                 }
             });
 
-            if (newEvent.data.id) {
-                usedEventIds.add(newEvent.data.id);
-            }
+            if (newEvent.data.id) usedEventIds.add(newEvent.data.id);
             createdCount++;
         }
 

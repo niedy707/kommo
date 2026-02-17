@@ -11,6 +11,7 @@ export interface SyncLog {
     type: 'create' | 'update' | 'delete' | 'info';
     message: string;
     details?: string;
+    trigger?: 'manual' | 'auto';
 }
 
 export function getLogs(): SyncLog[] {

@@ -7,10 +7,10 @@ export default function Home() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [data, setData] = useState<any>(null);
 
-  const performSync = () => {
+  const performSync = (trigger: 'manual' | 'auto' = 'manual') => {
     if (isSyncing) return;
     setIsSyncing(true);
-    fetch('/api/calendar/sync', { method: 'POST' })
+    fetch(`/api/calendar/sync?trigger=${trigger}`, { method: 'POST' })
       .then(res => res.json())
       .then(d => {
         if (d.success) setData(d);
@@ -22,11 +22,11 @@ export default function Home() {
 
   useEffect(() => {
     // Initial Sync
-    performSync();
+    performSync('auto');
 
     // Auto-poll every 15 mins
     const interval = setInterval(() => {
-      if (document.visibilityState === 'visible') performSync();
+      if (document.visibilityState === 'visible') performSync('auto');
     }, 15 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
@@ -45,7 +45,7 @@ export default function Home() {
           </div>
 
           <button
-            onClick={performSync}
+            onClick={() => performSync('manual')}
             disabled={isSyncing}
             className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all border ${isSyncing
               ? "bg-slate-800 border-slate-700 text-slate-400 cursor-wait"
@@ -155,6 +155,10 @@ export default function Home() {
                   <div key={log.id} className="p-3 bg-slate-950/50 rounded-xl border border-slate-800/50 hover:border-slate-700 transition-colors">
                     <div className="flex items-start justify-between mb-1">
                       <div className="flex items-center gap-2">
+                        {log.trigger === 'manual'
+                          ? <span className="text-[10px] font-bold text-slate-300 bg-slate-700 px-1.5 py-0.5 rounded border border-slate-600" title="Manuel Tetikleme">M</span>
+                          : <span className="text-[10px] font-bold text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700" title="Otomatik Tetikleme">A</span>
+                        }
                         {log.type === 'create' && <span className="text-xs font-bold text-slate-900 bg-emerald-500 px-1.5 py-0.5 rounded">YENİ</span>}
                         {log.type === 'update' && <span className="text-xs font-bold text-slate-900 bg-amber-500 px-1.5 py-0.5 rounded">GÜNCELLEME</span>}
                         <span className="text-sm font-semibold text-slate-300">{log.message}</span>
