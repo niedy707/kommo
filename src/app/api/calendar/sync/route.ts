@@ -196,6 +196,12 @@ async function handleSync(request: NextRequest) {
             addLogs(sessionLogs);
         }
 
+        // Fetch Calendar Details for UI
+        const [sourceCalInfo, targetCalInfo] = await Promise.all([
+            calendar.calendars.get({ calendarId: CALENDAR_CONFIG.calendarId }).catch(() => ({ data: { summary: 'Source Calendar' } })),
+            calendar.calendars.get({ calendarId: CALENDAR_CONFIG.targetCalendarId }).catch(() => ({ data: { summary: 'Target Calendar' } }))
+        ]);
+
         // Generate Upcoming Surgeries List (from Target Calendar)
         const upcomingSurgeries = targetEvents
             .filter(ev => ev.summary?.startsWith('Surgery') && ev.start?.dateTime)
