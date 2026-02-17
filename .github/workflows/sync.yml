@@ -1,0 +1,15 @@
+name: KommoSync Cron Job
+
+on:
+  schedule:
+    - cron: '*/15 * * * *' # Her 15 dakikada bir çalışır
+  workflow_dispatch: # Manuel tetikleme için
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Sync Endpoint
+        run: |
+          curl -X POST "${{ secrets.KOMMO_URL }}/api/calendar/sync?trigger=auto" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

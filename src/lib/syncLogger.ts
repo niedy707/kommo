@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 const LOG_FILE = path.join(process.cwd(), 'sync-logs.json');
+const HISTORY_FILE = path.join(process.cwd(), 'sync-history.json');
 const MAX_LOGS = 100;
 
 export interface SyncLog {
@@ -14,6 +15,14 @@ export interface SyncLog {
     trigger?: 'manual' | 'auto';
 }
 
+export interface SyncHistoryLog {
+    id: string;
+    timestamp: string;
+    status: 'success' | 'error';
+    message?: string;
+    trigger: 'manual' | 'auto';
+}
+
 export function getLogs(): SyncLog[] {
     try {
         if (!fs.existsSync(LOG_FILE)) {
@@ -23,6 +32,19 @@ export function getLogs(): SyncLog[] {
         return JSON.parse(data);
     } catch (error) {
         console.error("Failed to read logs:", error);
+        return [];
+    }
+}
+
+export function getHistoryLogs(): SyncHistoryLog[] {
+    try {
+        if (!fs.existsSync(HISTORY_FILE)) {
+            return [];
+        }
+        const data = fs.readFileSync(HISTORY_FILE, 'utf-8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Failed to read history logs:", error);
         return [];
     }
 }
@@ -45,6 +67,30 @@ export function addLogs(newLogs: Omit<SyncLog, 'id' | 'timestamp'>[]) {
         return updatedLogs;
     } catch (error) {
         console.error("Failed to write logs:", error);
+        return [];
+    }
+}
+
+export function addHistoryLog(status: 'success' | 'error', trigger: 'manual' | 'auto', message?: string) {
+    try {
+        const logs = getHistoryLogs();
+        const timestamp = new Date().toISOString();
+
+        const newLog: SyncHistoryLog = {
+            id: Math.random().toString(36).substring(7),
+            timestamp,
+            status,
+            trigger,
+            message
+        };
+
+        // Add new log to the beginning
+        const updatedLogs = [newLog, ...logs].slice(0, MAX_LOGS);
+
+        fs.writeFileSync(HISTORY_FILE, JSON.stringify(updatedLogs, null, 2));
+        return updatedLogs;
+    } catch (error) {
+        console.error("Failed to write history log:", error);
         return [];
     }
 }
