@@ -165,22 +165,31 @@ async function handleSync(request: NextRequest) {
                 const tgtEnd = existing.end?.dateTime ? new Date(existing.end.dateTime).toISOString() : null;
                 const srcEnd = new Date(srcEv.end.dateTime).toISOString();
 
+                // Normalization helper for comparison
+                const normalizeStr = (str: string | undefined | null) => (str || "").trim();
+
                 const needsTitleUpdate = existing.summary !== targetTitle;
-                const needsDescUpdate = existing.description !== targetDescription;
-                const needsColorUpdate = existing.colorId !== targetColorId;
+                const needsDescUpdate = normalizeStr(existing.description) !== normalizeStr(targetDescription);
+                // Handle colorId comparison (treat null/undefined as same)
+                const existingColor = existing.colorId || undefined;
+                const targetColor = targetColorId || undefined;
+                const needsColorUpdate = existingColor !== targetColor;
+
                 const needsTimeUpdate = tgtStart !== srcStart || tgtEnd !== srcEnd;
-                const needsLocationUpdate = (existing.location || "") !== srcLocation;
+                const needsLocationUpdate = normalizeStr(existing.location) !== normalizeStr(srcLocation);
 
                 if (needsTitleUpdate || needsDescUpdate || needsColorUpdate || needsTimeUpdate || needsLocationUpdate) {
                     const changes = [];
                     if (needsTitleUpdate) changes.push(`İsim: ${existing.summary} -> ${targetTitle}`);
                     if (needsTimeUpdate) changes.push(`Saat: ${new Date(tgtStart!).toLocaleString('tr-TR')} -> ${new Date(srcStart).toLocaleString('tr-TR')}`);
-                    if (needsColorUpdate) changes.push(`Renk güncellendi`);
+                    if (needsColorUpdate) changes.push(`Renk değişimi`);
+                    if (needsDescUpdate) changes.push(`Açıklama değişimi`);
+                    if (needsLocationUpdate) changes.push(`Konum değişimi`);
 
                     sessionLogs.push({
                         type: 'update',
-                        message: `Güncellendi: ${targetTitle}`,
-                        details: changes.join(', ')
+                        message: targetTitle,
+                        details: changes.length > 0 ? changes.join(', ') : 'Detay güncellendi'
                     });
 
                     console.log(`Updating event: ${targetTitle} (Time changed: ${needsTimeUpdate})`);
@@ -188,11 +197,11 @@ async function handleSync(request: NextRequest) {
                         calendarId: CALENDAR_CONFIG.targetCalendarId,
                         eventId: existing.id,
                         requestBody: {
-                            summary: targetTitle, // Force new title
+                            summary: targetTitle,
                             description: targetDescription,
                             colorId: targetColorId,
-                            start: srcEv.start, // Update time
-                            end: srcEv.end,     // Update time
+                            start: srcEv.start,
+                            end: srcEv.end,
                             location: srcLocation
                         }
                     });
@@ -206,7 +215,7 @@ async function handleSync(request: NextRequest) {
             // Insert new event
             sessionLogs.push({
                 type: 'create',
-                message: `Yeni Eklendi: ${targetTitle}`,
+                message: targetTitle,
                 details: `${new Date(srcStart).toLocaleDateString('tr-TR')} - ${srcEv.start.dateTime.split('T')[1].slice(0, 5)}`
             });
             const newEvent = await calendar.events.insert({
