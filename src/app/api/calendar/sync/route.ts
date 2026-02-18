@@ -7,22 +7,20 @@ import { categorizeEvent, cleanDisplayName } from '@/lib/classification';
 
 export const dynamic = 'force-dynamic';
 
-import { addLogs, getLogs, addHistoryLog, getHistoryLogs } from '@/lib/syncLogger';
-
-// Global lock to prevent concurrent syncs
-let isSyncRunning = false;
+import { addLogs, getLogs, addHistoryLog, getHistoryLogs, acquireLock, releaseLock } from '@/lib/syncLogger';
 
 export async function POST(request: NextRequest) {
-    if (isSyncRunning) {
-        console.warn("⚠️ Sync skipped: Another sync is already running.");
-        return NextResponse.json({ success: false, error: "Sync already in progress" }, { status: 429 });
+    // Try to acquire distributed lock for 60 seconds
+    const locked = await acquireLock('kommo:sync-lock', 60);
+    if (!locked) {
+        console.warn("⚠️ Sync skipped: Another instance holds the lock.");
+        return NextResponse.json({ success: false, error: "Sync already in progress (Locked)" }, { status: 429 });
     }
 
-    isSyncRunning = true;
     try {
         return await handleSync(request);
     } finally {
-        isSyncRunning = false;
+        await releaseLock('kommo:sync-lock');
     }
 }
 
