@@ -128,7 +128,7 @@ export default function Home() {
             </div>
             <h1 className="font-bold text-xl tracking-tight text-slate-100">Kommo<span className="text-slate-500">Sync</span></h1>
             <span className="ml-4 text-xs text-slate-500 border-l border-slate-700 pl-4 py-1 hidden md:inline-block">
-              Kommo-Medproper için, Ameliyat randevu takvim kopyası oluşturur.
+              {t.headerDescription}
             </span>
           </div>
 
@@ -267,7 +267,7 @@ export default function Home() {
                     </div>
                     {log.details && (
                       <p className="text-xs text-slate-500 ml-1 pl-2 border-l-2 border-slate-800">
-                        {log.details}
+                        {log.details === 'Kaynak takvimden silindiği için kaldırıldı' ? t.logDeletedDetails : log.details}
                       </p>
                     )}
                   </div>
@@ -356,17 +356,28 @@ export default function Home() {
                       <th className="py-2 text-xs font-bold text-slate-500 uppercase tracking-wider">{t.patient}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/50">
-                    {data.upcomingSurgeries.map((surgery: Surgery) => (
-                      <tr key={surgery.id} className="group hover:bg-slate-800/20 transition-colors">
-                        <td className="py-2.5 text-xs font-mono text-slate-400">
-                          {new Date(surgery.date).toLocaleDateString(lang === 'en' ? 'en-US' : 'tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                        </td>
-                        <td className="py-2.5 text-sm font-semibold text-slate-200 group-hover:text-amber-500 transition-colors">
-                          {surgery.name}
-                        </td>
-                      </tr>
-                    ))}
+                  <tbody className="">
+                    {data.upcomingSurgeries.map((surgery: Surgery, index: number) => {
+                      const prevSurgery = data.upcomingSurgeries[index - 1];
+                      const isNewDay = prevSurgery
+                        ? new Date(surgery.date).toDateString() !== new Date(prevSurgery.date).toDateString()
+                        : false;
+
+                      return (
+                        <tr
+                          key={surgery.id}
+                          className={`group hover:bg-slate-800/20 transition-colors ${index !== 0 && isNewDay ? 'border-t-2 border-slate-700' : 'border-t border-slate-800/50'
+                            }`}
+                        >
+                          <td className="py-2.5 text-xs font-mono text-slate-400 pl-2">
+                            {new Date(surgery.date).toLocaleDateString(lang === 'en' ? 'en-US' : 'tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                          </td>
+                          <td className="py-2.5 text-sm font-semibold text-slate-200 group-hover:text-amber-500 transition-colors">
+                            {surgery.name}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               ) : (

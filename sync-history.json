@@ -4,7 +4,9 @@
     "timestamp": "2026-02-18T08:19:15.220Z",
     "status": "success",
     "trigger": "auto",
-    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)",
+    "count": 2,
+    "endTime": "2026-02-18T11:03:16.629Z"
   },
   {
     "id": "n1p3vj",
