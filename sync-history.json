@@ -1,5 +1,54 @@
 [
   {
+    "id": "n1p3vj",
+    "timestamp": "2026-02-18T08:04:16.603Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "k9f1pm",
+    "timestamp": "2026-02-18T08:04:14.145Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "110yil",
+    "timestamp": "2026-02-18T08:04:10.854Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "a9mjyo",
+    "timestamp": "2026-02-18T08:00:19.875Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "bgqjyg",
+    "timestamp": "2026-02-18T07:56:54.284Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "5aq26h",
+    "timestamp": "2026-02-18T07:45:20.121Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "btry8",
+    "timestamp": "2026-02-18T07:41:54.537Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (1 yeni, 0 güncel, 0 silindi)"
+  },
+  {
     "id": "t4u1t",
     "timestamp": "2026-02-18T07:30:17.795Z",
     "status": "success",

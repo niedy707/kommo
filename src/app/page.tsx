@@ -305,7 +305,7 @@ export default function Home() {
                     {/* Line 2: Status & Message */}
                     <div className="flex items-center justify-between">
                       <span className={`text-xs font-medium ${hist.status === 'success' ? 'text-slate-400' : 'text-red-400'}`}>
-                        {hist.status === 'success' ? 'Başarılı' : 'Hata'}
+                        {hist.status === 'success' ? t.success : t.error}
                       </span>
                       {hist.message && (
                         <span className="text-[10px] text-slate-500 truncate ml-2 max-w-[140px]" title={hist.message}>

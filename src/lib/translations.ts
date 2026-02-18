@@ -36,7 +36,9 @@ export const translations = {
         loading: "Loading...",
         upcomingSurgeriesTitle: "Planned Surgeries",
         date: "Date",
-        patient: "Patient"
+        patient: "Patient",
+        success: "Success",
+        error: "Error"
     },
     tr: {
         title: "KommoSync",
@@ -74,6 +76,8 @@ export const translations = {
         loading: "Yükleniyor...",
         upcomingSurgeriesTitle: "Planlı Ameliyatlar",
         date: "Tarih",
-        patient: "Hasta"
+        patient: "Hasta",
+        success: "Başarılı",
+        error: "Hata"
     }
 };

@@ -1,5 +1,13 @@
 [
   {
+    "id": "42x08r",
+    "timestamp": "2026-02-18T07:41:53.553Z",
+    "type": "create",
+    "message": "ℹ️ hastaneden 12:00 de çıkarım.",
+    "details": "18.02.2026 - 13:00",
+    "trigger": "auto"
+  },
+  {
     "id": "tz5dno",
     "timestamp": "2026-02-18T07:26:51.435Z",
     "type": "create",
@@ -788,14 +796,6 @@
     "timestamp": "2026-02-17T21:49:23.625Z",
     "type": "update",
     "message": "Mafalda Cardıllo",
-    "details": "Açıklama değişimi",
-    "trigger": "auto"
-  },
-  {
-    "id": "73ggt6",
-    "timestamp": "2026-02-17T21:49:23.625Z",
-    "type": "update",
-    "message": "Arturo Sebastian Palomino Zegarra",
     "details": "Açıklama değişimi",
     "trigger": "auto"
   }
