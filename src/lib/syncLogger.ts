@@ -4,6 +4,17 @@ import path from 'path';
 
 const LOG_FILE = path.join(process.cwd(), 'sync-logs.json');
 const HISTORY_FILE = path.join(process.cwd(), 'sync-history.json');
+
+// Helper to get writable path in Vercel
+const getWritablePath = (filename: string) => {
+    if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+        return path.join('/tmp', filename);
+    }
+    return path.join(process.cwd(), filename);
+};
+
+const LOG_PATH = getWritablePath('sync-logs.json');
+const HISTORY_PATH = getWritablePath('sync-history.json');
 const MAX_LOGS = 100;
 
 export interface SyncLog {
@@ -25,10 +36,10 @@ export interface SyncHistoryLog {
 
 export function getLogs(): SyncLog[] {
     try {
-        if (!fs.existsSync(LOG_FILE)) {
+        if (!fs.existsSync(LOG_PATH)) {
             return [];
         }
-        const data = fs.readFileSync(LOG_FILE, 'utf-8');
+        const data = fs.readFileSync(LOG_PATH, 'utf-8');
         return JSON.parse(data);
     } catch (error) {
         console.error("Failed to read logs:", error);
@@ -38,10 +49,10 @@ export function getLogs(): SyncLog[] {
 
 export function getHistoryLogs(): SyncHistoryLog[] {
     try {
-        if (!fs.existsSync(HISTORY_FILE)) {
+        if (!fs.existsSync(HISTORY_PATH)) {
             return [];
         }
-        const data = fs.readFileSync(HISTORY_FILE, 'utf-8');
+        const data = fs.readFileSync(HISTORY_PATH, 'utf-8');
         return JSON.parse(data);
     } catch (error) {
         console.error("Failed to read history logs:", error);
@@ -63,7 +74,7 @@ export function addLogs(newLogs: Omit<SyncLog, 'id' | 'timestamp'>[]) {
         // Add new logs to the beginning
         const updatedLogs = [...formattedLogs, ...logs].slice(0, MAX_LOGS);
 
-        fs.writeFileSync(LOG_FILE, JSON.stringify(updatedLogs, null, 2));
+        fs.writeFileSync(LOG_PATH, JSON.stringify(updatedLogs, null, 2));
         return updatedLogs;
     } catch (error) {
         console.error("Failed to write logs:", error);
@@ -87,7 +98,7 @@ export function addHistoryLog(status: 'success' | 'error', trigger: 'manual' | '
         // Add new log to the beginning
         const updatedLogs = [newLog, ...logs].slice(0, MAX_LOGS);
 
-        fs.writeFileSync(HISTORY_FILE, JSON.stringify(updatedLogs, null, 2));
+        fs.writeFileSync(HISTORY_PATH, JSON.stringify(updatedLogs, null, 2));
         return updatedLogs;
     } catch (error) {
         console.error("Failed to write history log:", error);
