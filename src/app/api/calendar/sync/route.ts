@@ -279,7 +279,7 @@ async function handleSync(request: NextRequest) {
 
         // SAVE LOGS
         if (sessionLogs.length > 0) {
-            addLogs(sessionLogs);
+            await addLogs(sessionLogs);
         }
 
         // Fetch Calendar Details for UI
@@ -312,13 +312,13 @@ async function handleSync(request: NextRequest) {
             ? `Senkronizasyon başarılı. (${createdCount} yeni, ${updatedCount} güncel, ${deletedCount} silindi)`
             : "Senkronizasyon başarılı. (Değişiklik yok)";
 
-        addHistoryLog('success', trigger, msg);
+        await addHistoryLog('success', trigger, msg);
 
         return NextResponse.json({
             success: true,
             timestamp: new Date().toISOString(),
-            logs: getLogs(), // Data changes
-            history: getHistoryLogs(), // Sync history
+            logs: await getLogs(), // Data changes
+            history: await getHistoryLogs(), // Sync history
             upcomingSurgeries,
             stats: {
                 foundTotal: syncEvents.length,
@@ -352,7 +352,7 @@ async function handleSync(request: NextRequest) {
             trigger = (searchParams.get('trigger') as 'manual' | 'auto') || 'auto';
         } catch { }
 
-        addHistoryLog('error', trigger, `Senkronizasyon HATASI. (sebep: ${errorMessage})`);
+        await addHistoryLog('error', trigger, `Senkronizasyon HATASI. (sebep: ${errorMessage})`);
 
         return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
     }
