@@ -1,5 +1,446 @@
 [
   {
+    "id": "t4u1t",
+    "timestamp": "2026-02-18T07:30:17.795Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "16e8g",
+    "timestamp": "2026-02-18T07:26:52.644Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (1 yeni, 0 güncel, 0 silindi)"
+  },
+  {
+    "id": "p1x3hk",
+    "timestamp": "2026-02-18T07:15:17.919Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "lar09c",
+    "timestamp": "2026-02-18T07:07:34.420Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "nfssqt",
+    "timestamp": "2026-02-18T07:00:18.544Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "biitno",
+    "timestamp": "2026-02-18T06:45:15.975Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "osn77",
+    "timestamp": "2026-02-18T06:30:14.379Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "b6rxjf",
+    "timestamp": "2026-02-18T06:26:46.763Z",
+    "status": "success",
+    "trigger": "manual",
+    "message": "Senkronizasyon başarılı. (0 yeni, 1 güncel, 0 silindi)"
+  },
+  {
+    "id": "rmy4u",
+    "timestamp": "2026-02-18T06:15:14.229Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "0qm0jr",
+    "timestamp": "2026-02-18T06:14:37.442Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "83bspr",
+    "timestamp": "2026-02-18T06:03:31.687Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "4op88v",
+    "timestamp": "2026-02-18T05:59:38.563Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "hu4hoc",
+    "timestamp": "2026-02-18T04:52:02.113Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "aycwpp",
+    "timestamp": "2026-02-18T04:48:44.552Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "34fsl",
+    "timestamp": "2026-02-18T04:37:01.975Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "y0zww9",
+    "timestamp": "2026-02-18T04:33:43.928Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "515jmh",
+    "timestamp": "2026-02-18T04:22:01.875Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "rqbsym",
+    "timestamp": "2026-02-18T04:18:43.524Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "oh0sfs",
+    "timestamp": "2026-02-18T04:07:02.092Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "1x1ux",
+    "timestamp": "2026-02-18T04:03:42.815Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "ao1rgl",
+    "timestamp": "2026-02-18T03:52:01.281Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "ydgga",
+    "timestamp": "2026-02-18T03:48:42.614Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "qg9w7",
+    "timestamp": "2026-02-18T03:37:01.168Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "kso50ak",
+    "timestamp": "2026-02-18T03:33:42.431Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "4pep1g",
+    "timestamp": "2026-02-18T03:22:00.972Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "3j5yl9",
+    "timestamp": "2026-02-18T03:18:42.186Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "j2zjsn",
+    "timestamp": "2026-02-18T03:07:00.990Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "bz6644",
+    "timestamp": "2026-02-18T03:03:42.014Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "4p4uvn",
+    "timestamp": "2026-02-18T02:52:01.020Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "9u437h",
+    "timestamp": "2026-02-18T02:48:41.603Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "fig7oq",
+    "timestamp": "2026-02-18T02:37:00.773Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "s2d0v",
+    "timestamp": "2026-02-18T02:33:41.115Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "6t72wf",
+    "timestamp": "2026-02-18T02:22:00.563Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "42eou7",
+    "timestamp": "2026-02-18T02:18:40.894Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "6rxu8d",
+    "timestamp": "2026-02-18T02:07:00.353Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "hswzij",
+    "timestamp": "2026-02-18T02:03:40.491Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "3zxe6",
+    "timestamp": "2026-02-18T01:52:00.278Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "fnzpjm",
+    "timestamp": "2026-02-18T01:48:40.442Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "ttiksw",
+    "timestamp": "2026-02-18T01:37:00.292Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "eskgpw",
+    "timestamp": "2026-02-18T01:33:39.985Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "2x8kz9",
+    "timestamp": "2026-02-18T01:22:00.030Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "i6v8y",
+    "timestamp": "2026-02-18T01:18:40.043Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "txr0y",
+    "timestamp": "2026-02-18T01:06:59.856Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "3hq56a",
+    "timestamp": "2026-02-18T01:03:41.486Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "aep6ed",
+    "timestamp": "2026-02-18T00:51:59.857Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "ha32vc",
+    "timestamp": "2026-02-18T00:48:39.589Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "33ijzv",
+    "timestamp": "2026-02-18T00:36:59.782Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "3uidcr",
+    "timestamp": "2026-02-18T00:33:39.067Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "nnxe2",
+    "timestamp": "2026-02-18T00:21:59.482Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "arqhl9",
+    "timestamp": "2026-02-18T00:18:38.916Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "qd5yfq",
+    "timestamp": "2026-02-18T00:06:59.237Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "7ef2sa",
+    "timestamp": "2026-02-18T00:03:38.778Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "3ss3ya",
+    "timestamp": "2026-02-17T23:51:59.186Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "0gfvng",
+    "timestamp": "2026-02-17T23:48:38.378Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "cavpac",
+    "timestamp": "2026-02-17T23:36:59.335Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "o9ilhr",
+    "timestamp": "2026-02-17T23:33:38.379Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "tgusf",
+    "timestamp": "2026-02-17T23:21:59.283Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "s25s5o",
+    "timestamp": "2026-02-17T23:18:38.881Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (0 yeni, 0 güncel, 1 silindi)"
+  },
+  {
+    "id": "qbqkjp",
+    "timestamp": "2026-02-17T23:06:58.914Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "0m42z4",
+    "timestamp": "2026-02-17T23:05:32.448Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "xm3gt",
+    "timestamp": "2026-02-17T23:03:37.917Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "hqx5p7k",
+    "timestamp": "2026-02-17T22:50:32.031Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (Değişiklik yok)"
+  },
+  {
+    "id": "062hfj",
+    "timestamp": "2026-02-17T22:48:38.223Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Senkronizasyon başarılı. (1 yeni, 0 güncel, 0 silindi)"
+  },
+  {
     "id": "qe6te",
     "timestamp": "2026-02-17T22:35:32.049Z",
     "status": "success",

@@ -15,7 +15,7 @@ export function categorizeEvent(
     color?: string,
     start?: Date | string,
     end?: Date | string
-): 'surgery' | 'checkup' | 'appointment' | 'blocked' | 'ignore' {
+): 'surgery' | 'checkup' | 'appointment' | 'blocked' | 'ignore' | 'info' {
     const normalizedTitle = normalizeName(title);
 
     // BLOCKED: Occupies the calendar but is not a patient event (Busy)
@@ -40,10 +40,10 @@ export function categorizeEvent(
 
     // Check symbols on raw title first (before normalization strips them)
     if (title.includes('ℹ️') || title.includes('ℹ')) {
-        return 'ignore';
+        return 'info';
     }
 
-    const ignorePrefixes = ['ipt', 'ert', 'iptal', 'ertelendi', 'bilgi'];
+    const ignorePrefixes = ['ipt', 'ert', 'iptal', 'ertelendi'];
     const matchedPrefix = ignorePrefixes.find(prefix => normalizedTitle.toLowerCase().startsWith(prefix.toLowerCase()));
     if (matchedPrefix) {
         console.log(`[DEBUG_CLASS] Ignored by prefix: ${matchedPrefix}`);
@@ -154,7 +154,7 @@ export function normalizeName(name: string): string {
     // 6. Remove remaining non-word chars (but KEEP unicode letters)
     n = n.replace(/[^\p{L}\s\d]/gu, ' ');
 
-    const ignoredWords = new Set(['anestezi', 'pcr', 'yenidogan', 'yatis', 'yatış', 'plasti', 'plasty', 'op', 'bilgi', 'formu', 'hazırlık', 'dosya', 'dr', 'protokol', 've', 'iy']);
+    const ignoredWords = new Set(['anestezi', 'pcr', 'yenidogan', 'yatis', 'yatış', 'plasti', 'plasty', 'op', 'formu', 'hazırlık', 'dosya', 'dr', 'protokol', 've', 'iy']);
 
     return n.trim().split(/\s+/)
         .filter(w => w.length > 1 && !ignoredWords.has(w))

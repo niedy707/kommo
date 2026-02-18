@@ -76,7 +76,7 @@ async function handleSync(request: NextRequest) {
             const start = ev.start?.dateTime || ev.start?.date;
             const end = ev.end?.dateTime || ev.end?.date;
             const category = categorizeEvent(ev.summary, ev.colorId || undefined, start || undefined, end || undefined);
-            return category === 'surgery' || category === 'blocked';
+            return category === 'surgery' || category === 'blocked' || category === 'info';
         });
 
         // 4. Fetch target events
@@ -122,6 +122,15 @@ async function handleSync(request: NextRequest) {
                 logTitle = cleanedName; // Log only the name for surgeries
                 targetDescription = NEW_DESCRIPTION;
                 targetColorId = '5';
+            } else if (category === 'info') {
+                // Info events: Keep title, description, and color as is
+                targetTitle = srcRawTitle;
+                logTitle = srcRawTitle;
+                // Append signature to description for management tracking if not already present
+                if (!isManagedEvent(targetDescription)) {
+                    targetDescription = `${targetDescription || ''}\n\n${NEW_DESCRIPTION}`;
+                }
+                // Keep original color (targetColorId is already set to srcEv.colorId)
             }
 
             const srcLocation = srcEv.location || "";
