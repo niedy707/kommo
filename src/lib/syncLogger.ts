@@ -39,6 +39,36 @@ export interface SyncHistoryLog {
     trigger: 'manual' | 'auto';
 }
 
+// --- Distributed Lock ---
+export async function acquireLock(lockKey: string, ttlSeconds: number): Promise<boolean> {
+    if (!redis) {
+        console.warn("⚠️ Redis client not initialized. Falling back to local lock only.");
+        return true; // If no Redis, rely on in-memory or ignore (local dev)
+    }
+    try {
+        // SET key value NX EX ttl
+        const result = await redis.set(lockKey, 'locked', 'EX', ttlSeconds, 'NX');
+        if (result === 'OK') {
+            return true;
+        } else {
+            console.warn(`🔒 Failed to acquire lock for ${lockKey}`);
+            return false;
+        }
+    } catch (error) {
+        console.error("Redis lock error:", error);
+        return false; // Fail safe: assume locked if error
+    }
+}
+
+export async function releaseLock(lockKey: string) {
+    if (!redis) return;
+    try {
+        await redis.del(lockKey);
+    } catch (error) {
+        console.error("Redis unlock error:", error);
+    }
+}
+
 // --- Redis Helpers ---
 async function getRedisLogs(key: string): Promise<any[]> {
     if (!redis) return [];

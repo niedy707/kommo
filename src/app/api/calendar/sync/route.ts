@@ -9,17 +9,28 @@ export const dynamic = 'force-dynamic';
 
 import { addLogs, getLogs, addHistoryLog, getHistoryLogs, acquireLock, releaseLock } from '@/lib/syncLogger';
 
+// Global lock to prevent concurrent syncs (Instance level)
+let isSyncRunning = false;
+
 export async function POST(request: NextRequest) {
-    // Try to acquire distributed lock for 60 seconds
-    const locked = await acquireLock('kommo:sync-lock', 60);
-    if (!locked) {
-        console.warn("⚠️ Sync skipped: Another instance holds the lock.");
-        return NextResponse.json({ success: false, error: "Sync already in progress (Locked)" }, { status: 429 });
+    // 1. Instance-level Lock (Fast fail)
+    if (isSyncRunning) {
+        console.warn("⚠️ Sync skipped: Local instance lock is active.");
+        return NextResponse.json({ success: false, error: "Sync already in progress (Local)" }, { status: 429 });
     }
 
+    // 2. Distributed Lock (Redis)
+    const locked = await acquireLock('kommo:sync-lock', 60);
+    if (!locked) {
+        console.warn("⚠️ Sync skipped: Distributed lock is active.");
+        return NextResponse.json({ success: false, error: "Sync already in progress (Distributed)" }, { status: 429 });
+    }
+
+    isSyncRunning = true;
     try {
         return await handleSync(request);
     } finally {
+        isSyncRunning = false;
         await releaseLock('kommo:sync-lock');
     }
 }
