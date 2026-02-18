@@ -76,8 +76,12 @@ export const translations = {
         manual: "MANUEL",
         auto: "OTOMATİK",
         loading: "Yükleniyor...",
+        upcomingSurgeriesTitle: "Planlı Ameliyatlar",
+        date: "Tarih",
         patient: "Hasta",
         success: "Başarılı",
-        error: "Hata"
+        error: "Hata",
+        headerDescription: "Kommo-Medproper için, Ameliyat randevu takvim kopyası oluşturur.",
+        logDeletedDetails: "Kaynak takvimden silindiği için kaldırıldı"
     }
 };
