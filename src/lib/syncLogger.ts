@@ -37,6 +37,8 @@ export interface SyncHistoryLog {
     status: 'success' | 'error';
     message?: string;
     trigger: 'manual' | 'auto';
+    endTime?: string;
+    count?: number;
 }
 
 // --- Distributed Lock ---
@@ -154,16 +156,38 @@ export async function addLogs(newLogs: Omit<SyncLog, 'id' | 'timestamp'>[]) {
 
 export async function addHistoryLog(status: 'success' | 'error', trigger: 'manual' | 'auto', message?: string) {
     const timestamp = new Date().toISOString();
-    const newLog: SyncHistoryLog = {
-        id: Math.random().toString(36).substring(7),
-        timestamp,
-        status,
-        trigger,
-        message
-    };
+
+    // Check if this is a "No changes" log
+    const isNoChangeLog = status === 'success' && message?.includes('Değişiklik yok');
 
     if (redis) {
         const currentHistory = await getRedisLogs('kommo:history');
+
+        // Grouping Logic
+        if (isNoChangeLog && currentHistory.length > 0) {
+            const lastLog = currentHistory[0];
+            const lastLogIsNoChange = lastLog.status === 'success' && lastLog.message?.includes('Değişiklik yok');
+
+            if (lastLogIsNoChange) {
+                // Update existing log
+                lastLog.count = (lastLog.count || 1) + 1;
+                lastLog.endTime = timestamp;
+                // lastLog.timestamp remains as start time
+
+                await saveRedisLogs('kommo:history', currentHistory);
+                return currentHistory;
+            }
+        }
+
+        const newLog: SyncHistoryLog = {
+            id: Math.random().toString(36).substring(7),
+            timestamp,
+            status,
+            trigger,
+            message,
+            count: 1
+        };
+
         const updatedHistory = [newLog, ...currentHistory].slice(0, MAX_LOGS);
         await saveRedisLogs('kommo:history', updatedHistory);
         return updatedHistory;
@@ -175,6 +199,29 @@ export async function addHistoryLog(status: 'success' | 'error', trigger: 'manua
         if (fs.existsSync(HISTORY_PATH)) {
             currentHistory = JSON.parse(fs.readFileSync(HISTORY_PATH, 'utf-8'));
         }
+
+        // Grouping Logic (FS)
+        if (isNoChangeLog && currentHistory.length > 0) {
+            const lastLog = currentHistory[0];
+            const lastLogIsNoChange = lastLog.status === 'success' && lastLog.message?.includes('Değişiklik yok');
+
+            if (lastLogIsNoChange) {
+                lastLog.count = (lastLog.count || 1) + 1;
+                lastLog.endTime = timestamp;
+                fs.writeFileSync(HISTORY_PATH, JSON.stringify(currentHistory, null, 2));
+                return currentHistory;
+            }
+        }
+
+        const newLog: SyncHistoryLog = {
+            id: Math.random().toString(36).substring(7),
+            timestamp,
+            status,
+            trigger,
+            message,
+            count: 1
+        };
+
         const updatedHistory = [newLog, ...currentHistory].slice(0, MAX_LOGS);
         fs.writeFileSync(HISTORY_PATH, JSON.stringify(updatedHistory, null, 2));
         return updatedHistory;

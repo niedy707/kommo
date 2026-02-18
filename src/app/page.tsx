@@ -33,6 +33,8 @@ interface SyncHistoryLog {
   status: 'success' | 'error';
   message?: string;
   trigger: 'manual' | 'auto';
+  endTime?: string;
+  count?: number;
 }
 
 interface SyncResponse {
@@ -104,7 +106,7 @@ export default function Home() {
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return lang === 'en' ? "--:--" : "--:--";
-    return new Date(dateStr).toLocaleTimeString(lang === 'en' ? 'en-US' : 'tr-TR', { hour: '2-digit', minute: '2-digit' });
+    return new Date(dateStr).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', hour12: false });
   };
 
   const formatFullDate = (dateStr: string) => {
@@ -260,7 +262,7 @@ export default function Home() {
                         <span className="text-sm font-semibold text-slate-300">{log.message}</span>
                       </div>
                       <span className="text-[10px] text-slate-500 font-mono shrink-0">
-                        {new Date(log.timestamp).toLocaleTimeString(lang === 'en' ? 'en-US' : 'tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(log.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', hour12: false })}
                       </span>
                     </div>
                     {log.details && (
@@ -295,12 +297,27 @@ export default function Home() {
                       <div className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${hist.status === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`}></div>
                         <span className="text-xs font-mono text-slate-400">
-                          {new Date(hist.timestamp).toLocaleTimeString(lang === 'en' ? 'en-US' : 'tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                          {hist.count && hist.count > 1 && hist.endTime ? (
+                            <>
+                              {new Date(hist.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                              <span className="text-slate-600 mx-1">-</span>
+                              {new Date(hist.endTime).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                            </>
+                          ) : (
+                            new Date(hist.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', hour12: false })
+                          )}
                         </span>
                       </div>
-                      <span className="text-[10px] bg-slate-800 text-slate-500 px-1 rounded">
-                        {hist.trigger === 'manual' ? 'MAN' : 'AUTO'}
-                      </span>
+                      <div className="flex items-center gap-1">
+                        {hist.count && hist.count > 1 && (
+                          <span className="text-[10px] bg-emerald-500/10 text-emerald-500 px-1.5 rounded font-bold border border-emerald-500/20">
+                            {hist.count}x
+                          </span>
+                        )}
+                        <span className="text-[10px] bg-slate-800 text-slate-500 px-1 rounded">
+                          {hist.trigger === 'manual' ? 'MAN' : 'AUTO'}
+                        </span>
+                      </div>
                     </div>
                     {/* Line 2: Status & Message */}
                     <div className="flex items-center justify-between">
