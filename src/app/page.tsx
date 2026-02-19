@@ -54,6 +54,20 @@ export default function Home() {
   const [nextSync, setNextSync] = useState<Date | null>(null);
   const [timeLeft, setTimeLeft] = useState<string>("");
 
+  // Filtreler
+  const [logTypeFilter, setLogTypeFilter] = useState<'all' | 'create' | 'update' | 'delete' | 'info'>('all');
+  const [historyStatusFilter, setHistoryStatusFilter] = useState<'all' | 'success' | 'error'>('all');
+  const [historyTriggerFilter, setHistoryTriggerFilter] = useState<'all' | 'manual' | 'auto'>('all');
+
+  const filteredLogs = (data?.logs ?? []).filter(log =>
+    logTypeFilter === 'all' || log.type === logTypeFilter
+  );
+  const filteredHistory = (data?.history ?? []).filter(hist => {
+    const s = historyStatusFilter === 'all' || hist.status === historyStatusFilter;
+    const tr2 = historyTriggerFilter === 'all' || hist.trigger === historyTriggerFilter;
+    return s && tr2;
+  });
+
   const t = translations[lang];
 
   const performSync = React.useCallback((trigger: 'manual' | 'auto' = 'manual') => {
@@ -238,17 +252,38 @@ export default function Home() {
 
           {/* LOGS Section - Left (2 cols) */}
           <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-3xl p-8 flex flex-col h-full overflow-hidden">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center justify-between shrink-0">
-              <span className="flex items-center gap-3">
-                <Activity className="w-6 h-6 text-slate-400" />
-                {t.syncLogs}
-              </span>
-              <span className="text-xs font-mono text-slate-500 bg-slate-800 px-2 py-1 rounded">{t.last100}</span>
-            </h3>
+            <div className="shrink-0 mb-4">
+              <h3 className="text-xl font-bold text-white flex items-center justify-between mb-3">
+                <span className="flex items-center gap-3">
+                  <Activity className="w-6 h-6 text-slate-400" />
+                  {t.syncLogs}
+                </span>
+                <span className="text-xs font-mono text-slate-500 bg-slate-800 px-2 py-1 rounded">{t.last100}</span>
+              </h3>
+              {/* Log Type Filtreleri */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {(['all', 'create', 'update', 'delete', 'info'] as const).map(f => {
+                  const labels: Record<string, string> = { all: 'Tümü', create: '🟢 Yeni', update: '🟡 Güncelleme', delete: '🔴 Silme', info: '🔵 Bilgi' };
+                  const active = logTypeFilter === f;
+                  return (
+                    <button key={f} onClick={() => setLogTypeFilter(f)}
+                      className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all border ${active
+                          ? f === 'all' ? 'bg-slate-600 text-white border-slate-500'
+                            : f === 'create' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                              : f === 'update' ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                                : f === 'delete' ? 'bg-red-500/20 text-red-400 border-red-500/40'
+                                  : 'bg-blue-500/20 text-blue-400 border-blue-500/40'
+                          : 'bg-slate-800 text-slate-500 border-slate-700 hover:text-slate-300'
+                        }`}
+                    >{labels[f]}</button>
+                  );
+                })}
+              </div>
+            </div>
 
             <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
-              {data?.logs && data.logs.length > 0 ? (
-                data.logs.map((log: SyncLog) => (
+              {filteredLogs.length > 0 ? (
+                filteredLogs.map((log: SyncLog) => (
                   <div key={log.id} className="p-3 bg-slate-950/50 rounded-xl border border-slate-800/50 hover:border-slate-700 transition-colors">
                     <div className="flex items-start justify-between mb-1">
                       <div className="flex items-center gap-2">
@@ -275,7 +310,7 @@ export default function Home() {
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-slate-500 opacity-50">
                   <Activity className="w-12 h-12 mb-2 stroke-1" />
-                  <p>{t.noLogs}</p>
+                  <p>{logTypeFilter !== 'all' ? 'Bu filtrede kayıt yok' : t.noLogs}</p>
                 </div>
               )}
             </div>
@@ -283,14 +318,41 @@ export default function Home() {
 
           {/* Sync History - Middle (1 col) */}
           <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col h-full overflow-hidden">
-            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2 shrink-0">
-              <RefreshCw className="w-5 h-5 text-slate-400" />
-              {t.syncHistory}
-            </h3>
+            <div className="shrink-0 mb-4">
+              <h3 className="text-lg font-bold text-white flex items-center gap-2 mb-3">
+                <RefreshCw className="w-5 h-5 text-slate-400" />
+                {t.syncHistory}
+              </h3>
+              {/* History Filtreleri */}
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center gap-1">
+                  {(['all', 'success', 'error'] as const).map(f => (
+                    <button key={f} onClick={() => setHistoryStatusFilter(f)}
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded transition-all border ${historyStatusFilter === f
+                          ? f === 'success' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                            : f === 'error' ? 'bg-red-500/20 text-red-400 border-red-500/40'
+                              : 'bg-slate-600 text-white border-slate-500'
+                          : 'bg-slate-800 text-slate-500 border-slate-700 hover:text-slate-300'
+                        }`}
+                    >{f === 'all' ? 'Tümü' : f === 'success' ? '✓ Başarılı' : '✗ Hata'}</button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-1">
+                  {(['all', 'manual', 'auto'] as const).map(f => (
+                    <button key={f} onClick={() => setHistoryTriggerFilter(f)}
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded transition-all border ${historyTriggerFilter === f
+                          ? 'bg-slate-600 text-white border-slate-500'
+                          : 'bg-slate-800 text-slate-500 border-slate-700 hover:text-slate-300'
+                        }`}
+                    >{f === 'all' ? 'Tümü' : f === 'manual' ? 'Manuel' : 'Otomatik'}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-3">
-              {data?.history && data.history.length > 0 ? (
-                data.history.map((hist) => (
+              {filteredHistory.length > 0 ? (
+                filteredHistory.map((hist) => (
                   <div key={hist.id} className="p-3 bg-slate-950/30 rounded-lg border border-slate-800/50 hover:border-slate-700 transition-colors">
                     {/* Line 1: Time & Trigger */}
                     <div className="flex items-center justify-between mb-1">
