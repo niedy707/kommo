@@ -263,17 +263,23 @@ export default function Home() {
               {/* Log Type Filtreleri */}
               <div className="flex items-center gap-1.5 flex-wrap">
                 {(['all', 'create', 'update', 'delete', 'info'] as const).map(f => {
-                  const labels: Record<string, string> = { all: 'Tümü', create: '🟢 Yeni', update: '🟡 Güncelleme', delete: '🔴 Silme', info: '🔵 Bilgi' };
+                  const labels: Record<string, string> = {
+                    all: t.filterAll,
+                    create: t.filterNew,
+                    update: t.filterUpdate,
+                    delete: t.filterDelete,
+                    info: t.filterInfo,
+                  };
                   const active = logTypeFilter === f;
                   return (
                     <button key={f} onClick={() => setLogTypeFilter(f)}
                       className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all border ${active
-                          ? f === 'all' ? 'bg-slate-600 text-white border-slate-500'
-                            : f === 'create' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                              : f === 'update' ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
-                                : f === 'delete' ? 'bg-red-500/20 text-red-400 border-red-500/40'
-                                  : 'bg-blue-500/20 text-blue-400 border-blue-500/40'
-                          : 'bg-slate-800 text-slate-500 border-slate-700 hover:text-slate-300'
+                        ? f === 'all' ? 'bg-slate-600 text-white border-slate-500'
+                          : f === 'create' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                            : f === 'update' ? 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                              : f === 'delete' ? 'bg-red-500/20 text-red-400 border-red-500/40'
+                                : 'bg-blue-500/20 text-blue-400 border-blue-500/40'
+                        : 'bg-slate-800 text-slate-500 border-slate-700 hover:text-slate-300'
                         }`}
                     >{labels[f]}</button>
                   );
@@ -293,7 +299,7 @@ export default function Home() {
                         }
                         {log.type === 'create' && <span className="text-xs font-bold text-slate-900 bg-emerald-500 px-1.5 py-0.5 rounded">{t.logNew}</span>}
                         {log.type === 'update' && <span className="text-xs font-bold text-slate-900 bg-amber-500 px-1.5 py-0.5 rounded">{t.logUpdate}</span>}
-                        {log.type === 'delete' && <span className="text-xs font-bold text-slate-900 bg-red-500 px-1.5 py-0.5 rounded">Silindi</span>}
+                        {log.type === 'delete' && <span className="text-xs font-bold text-slate-900 bg-red-500 px-1.5 py-0.5 rounded">{t.logDelete}</span>}
                         <span className="text-sm font-semibold text-slate-300">{log.message}</span>
                       </div>
                       <span className="text-[10px] text-slate-500 font-mono shrink-0">
@@ -310,7 +316,7 @@ export default function Home() {
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-slate-500 opacity-50">
                   <Activity className="w-12 h-12 mb-2 stroke-1" />
-                  <p>{logTypeFilter !== 'all' ? 'Bu filtrede kayıt yok' : t.noLogs}</p>
+                  <p>{logTypeFilter !== 'all' ? t.filterNoResults : t.noLogs}</p>
                 </div>
               )}
             </div>
@@ -329,22 +335,22 @@ export default function Home() {
                   {(['all', 'success', 'error'] as const).map(f => (
                     <button key={f} onClick={() => setHistoryStatusFilter(f)}
                       className={`text-[10px] font-bold px-2 py-0.5 rounded transition-all border ${historyStatusFilter === f
-                          ? f === 'success' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
-                            : f === 'error' ? 'bg-red-500/20 text-red-400 border-red-500/40'
-                              : 'bg-slate-600 text-white border-slate-500'
-                          : 'bg-slate-800 text-slate-500 border-slate-700 hover:text-slate-300'
+                        ? f === 'success' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                          : f === 'error' ? 'bg-red-500/20 text-red-400 border-red-500/40'
+                            : 'bg-slate-600 text-white border-slate-500'
+                        : 'bg-slate-800 text-slate-500 border-slate-700 hover:text-slate-300'
                         }`}
-                    >{f === 'all' ? 'Tümü' : f === 'success' ? '✓ Başarılı' : '✗ Hata'}</button>
+                    >{f === 'all' ? t.filterAll : f === 'success' ? t.filterSuccess : t.filterError}</button>
                   ))}
                 </div>
                 <div className="flex items-center gap-1">
                   {(['all', 'manual', 'auto'] as const).map(f => (
                     <button key={f} onClick={() => setHistoryTriggerFilter(f)}
                       className={`text-[10px] font-bold px-2 py-0.5 rounded transition-all border ${historyTriggerFilter === f
-                          ? 'bg-slate-600 text-white border-slate-500'
-                          : 'bg-slate-800 text-slate-500 border-slate-700 hover:text-slate-300'
+                        ? 'bg-slate-600 text-white border-slate-500'
+                        : 'bg-slate-800 text-slate-500 border-slate-700 hover:text-slate-300'
                         }`}
-                    >{f === 'all' ? 'Tümü' : f === 'manual' ? 'Manuel' : 'Otomatik'}</button>
+                    >{f === 'all' ? t.filterAll : f === 'manual' ? t.filterManual : t.filterAuto}</button>
                   ))}
                 </div>
               </div>

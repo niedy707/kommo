@@ -31,6 +31,7 @@ export const translations = {
         ruleDuplicationDesc: "Events are updated, not duplicated, even if the time changes.",
         logNew: "NEW",
         logUpdate: "UPDATE",
+        logDelete: "DELETED",
         manual: "Manual Trigger",
         auto: "Auto Trigger",
         loading: "Loading...",
@@ -40,7 +41,17 @@ export const translations = {
         success: "Success",
         error: "Error",
         headerDescription: "Creates a copy of Surgery appointment calendar for Kommo-Medproper.",
-        logDeletedDetails: "Removed because it was deleted from source calendar"
+        logDeletedDetails: "Removed because it was deleted from source calendar",
+        filterAll: "All",
+        filterNew: "🟢 New",
+        filterUpdate: "🟡 Update",
+        filterDelete: "🔴 Delete",
+        filterInfo: "🔵 Info",
+        filterSuccess: "✓ Success",
+        filterError: "✗ Error",
+        filterManual: "Manual",
+        filterAuto: "Auto",
+        filterNoResults: "No records for this filter"
     },
     tr: {
         title: "KommoSync",
@@ -73,6 +84,7 @@ export const translations = {
         ruleDuplicationDesc: "Aynı isim ve saate sahip etkinlikler tekrar oluşturulmaz, mevcut olanlar güncellenir.",
         logNew: "YENİ",
         logUpdate: "GÜNCEL",
+        logDelete: "SİLİNDİ",
         manual: "MANUEL",
         auto: "OTOMATİK",
         loading: "Yükleniyor...",
@@ -82,6 +94,16 @@ export const translations = {
         success: "Başarılı",
         error: "Hata",
         headerDescription: "Kommo-Medproper için, Ameliyat randevu takvim kopyası oluşturur.",
-        logDeletedDetails: "Kaynak takvimden silindiği için kaldırıldı"
+        logDeletedDetails: "Kaynak takvimden silindiği için kaldırıldı",
+        filterAll: "Tümü",
+        filterNew: "🟢 Yeni",
+        filterUpdate: "🟡 Güncelleme",
+        filterDelete: "🔴 Silme",
+        filterInfo: "🔵 Bilgi",
+        filterSuccess: "✓ Başarılı",
+        filterError: "✗ Hata",
+        filterManual: "Manuel",
+        filterAuto: "Otomatik",
+        filterNoResults: "Bu filtrede kayıt yok"
     }
 };
