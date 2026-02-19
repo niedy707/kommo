@@ -1,5 +1,29 @@
 [
   {
+    "id": "ydprh",
+    "timestamp": "2026-02-19T18:15:49.255Z",
+    "type": "delete",
+    "message": "ℹ️ oğuz çekim",
+    "details": "Kaynak takvimden silindiği için kaldırıldı",
+    "trigger": "auto"
+  },
+  {
+    "id": "wx21qs",
+    "timestamp": "2026-02-19T18:15:03.640Z",
+    "type": "create",
+    "message": "ℹ️ oğuz çekim",
+    "details": "18.02.2026 - 10:00",
+    "trigger": "manual"
+  },
+  {
+    "id": "qqs8hs",
+    "timestamp": "2026-02-19T18:15:03.640Z",
+    "type": "update",
+    "message": "Gabriella Stoiculescu",
+    "details": "Saat: 19.02.2026 13:30:00 -> 19.02.2026 13:30:00",
+    "trigger": "manual"
+  },
+  {
     "id": "42x08r",
     "timestamp": "2026-02-18T07:41:53.553Z",
     "type": "create",
@@ -772,30 +796,6 @@
     "timestamp": "2026-02-17T21:49:23.625Z",
     "type": "update",
     "message": "Miss Freya India Trinity Sanger",
-    "details": "Açıklama değişimi",
-    "trigger": "auto"
-  },
-  {
-    "id": "5g731f",
-    "timestamp": "2026-02-17T21:49:23.625Z",
-    "type": "update",
-    "message": "Reyhan Çelik",
-    "details": "Açıklama değişimi",
-    "trigger": "auto"
-  },
-  {
-    "id": "ivqaio",
-    "timestamp": "2026-02-17T21:49:23.625Z",
-    "type": "update",
-    "message": "Adelina Elena Savu",
-    "details": "Açıklama değişimi",
-    "trigger": "auto"
-  },
-  {
-    "id": "i427di",
-    "timestamp": "2026-02-17T21:49:23.625Z",
-    "type": "update",
-    "message": "Mafalda Cardıllo",
     "details": "Açıklama değişimi",
     "trigger": "auto"
   }

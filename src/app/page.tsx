@@ -394,7 +394,7 @@ export default function Home() {
                       </span>
                       {hist.message && (
                         <span className="text-[10px] text-slate-500 truncate ml-2 max-w-[140px]" title={hist.message}>
-                          {hist.message.replace('Senkronizasyon başarılı. ', '').replace(/[()]/g, '')}
+                          {hist.message.replace('Sync successful. ', '').replace(/[()]/g, '')}
                         </span>
                       )}
                     </div>

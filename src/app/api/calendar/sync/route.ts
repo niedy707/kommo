@@ -65,11 +65,18 @@ async function handleSync(request: NextRequest) {
         });
         const calendar = google.calendar({ version: 'v3', auth });
 
-        // 2. Define Time Range (Next 6 Months)
+        // 2. Define Time Range (Dün gece yarısından itibaren 6 ay / From yesterday midnight for 6 months)
         const now = new Date();
-        const sixMonthsLater = new Date();
+
+        // Dünün başlangıcı (gece 00:00:00) — bugün ve dünkü etkinlikleri kapsar
+        const yesterday = new Date(now);
+        yesterday.setDate(now.getDate() - 1);
+        yesterday.setHours(0, 0, 0, 0);
+
+        const sixMonthsLater = new Date(now);
         sixMonthsLater.setMonth(now.getMonth() + 6);
-        const timeMin = now.toISOString();
+
+        const timeMin = yesterday.toISOString();
         const timeMax = sixMonthsLater.toISOString();
 
         // 3. Fetch source events
@@ -318,8 +325,8 @@ async function handleSync(request: NextRequest) {
         // Record HISTORY Log (Success)
         const hasChanges = createdCount > 0 || updatedCount > 0 || deletedCount > 0;
         const msg = hasChanges
-            ? `Senkronizasyon başarılı. (${createdCount} yeni, ${updatedCount} güncel, ${deletedCount} silindi)`
-            : "Senkronizasyon başarılı. (Değişiklik yok)";
+            ? `Sync successful. (${createdCount} new, ${updatedCount} updated, ${deletedCount} deleted)`
+            : "Sync successful. (No changes)";
 
         await addHistoryLog('success', trigger, msg);
 
@@ -349,19 +356,16 @@ async function handleSync(request: NextRequest) {
     } catch (error: unknown) {
         console.error("Sync Error:", error);
 
-        const errorMessage = error instanceof Error ? error.message : "Bilinmeyen Hata";
+        const errorMessage = error instanceof Error ? error.message : "Unknown Error";
 
         // Record HISTORY Log (Error)
-        // We need to re-parse trigger here or pass it down? 
-        // For simplicity, we can't easily access 'trigger' in catch block without moving var decl up.
-        // Let's rely on default 'auto' if undefined or try to extract again.
         let trigger: 'manual' | 'auto' = 'auto';
         try {
             const { searchParams } = new URL(request.url);
             trigger = (searchParams.get('trigger') as 'manual' | 'auto') || 'auto';
         } catch { }
 
-        await addHistoryLog('error', trigger, `Senkronizasyon HATASI. (sebep: ${errorMessage})`);
+        await addHistoryLog('error', trigger, `Sync ERROR. (reason: ${errorMessage})`);
 
         return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
     }

@@ -1,5 +1,21 @@
 [
   {
+    "id": "29him",
+    "timestamp": "2026-02-19T18:15:49.971Z",
+    "status": "success",
+    "trigger": "auto",
+    "message": "Sync successful. (0 new, 0 updated, 1 deleted)",
+    "count": 1
+  },
+  {
+    "id": "wh5f65",
+    "timestamp": "2026-02-19T18:15:04.369Z",
+    "status": "success",
+    "trigger": "manual",
+    "message": "Senkronizasyon başarılı. (1 yeni, 1 güncel, 0 silindi)",
+    "count": 1
+  },
+  {
     "id": "euypsv",
     "timestamp": "2026-02-18T08:19:15.220Z",
     "status": "success",
