@@ -303,7 +303,13 @@ export default function Home() {
                         <span className="text-sm font-semibold text-slate-300">{log.message}</span>
                       </div>
                       <span className="text-[10px] text-slate-500 font-mono shrink-0">
-                        {new Date(log.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        {(() => {
+                          const d = new Date(log.timestamp);
+                          const day = d.getDate().toString().padStart(2, '0');
+                          const month = d.toLocaleString('en-US', { month: 'short' });
+                          const time = d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', hour12: false });
+                          return `${day}${month}-${time}`;
+                        })()}
                       </span>
                     </div>
                     {log.details && (
